@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Gestionale · Lo Chalet Amiata</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap');
+
+  :root {
+    --verde: #2d6a4f;
+    --verde-d: #1b4332;
+    --verde-l: #52b788;
+    --verde-xl: #d8f3dc;
+    --oro: #c9a84c;
+    --oro-l: #fdf3d8;
+    --rosso: #c0392b;
+    --rosso-l: #fdecea;
+    --giallo-l: #fff8e1;
+    --bg: #f5f3ee;
+    --card: #ffffff;
+    --testo: #1a1a1a;
+    --muted: #6b7280;
+    --border: rgba(0,0,0,0.09);
+    --radius: 14px;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: var(--bg);
+    color: var(--testo);
+    min-height: 100vh;
+    padding-bottom: 80px;
+  }
+
+  /* HEADER */
+  .app-header {
+    background: var(--verde-d);
+    color: white;
+    padding: 1.2rem 1rem 1rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .cervo { font-size: 1.6rem; }
+  .header-titolo { font-family: 'Playfair Display', serif; font-size: 1.2rem; letter-spacing: .05em; }
+  .header-sub { font-size: 10px; opacity: .7; letter-spacing: .12em; text-transform: uppercase; margin-top: 2px; }
+
+  /* NAV */
+  .nav-bar {
+    display: flex;
+    background: var(--verde);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .nav-bar::-webkit-scrollbar { display: none; }
+  .nav-btn {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    font-family: 'Lato', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.65);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .nav-btn.active { color: white; border-bottom-color: var(--oro); }
+
+  /* CONTENT */
+  .content { padding: 1rem; max-width: 900px; margin: 0 auto; }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.1rem 1.2rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--verde-d);
+    margin-bottom: .9rem;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-icon { font-size: 1.1rem; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 1rem; }
+  .stat-box {
+    background: var(--card);
+    border-radius: 10px;
+    padding: .8rem .6rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .stat-val { font-size: 1.3rem; font-weight: 700; color: var(--verde); }
+  .stat-val.oro { color: var(--oro); }
+  .stat-val.rosso { color: var(--rosso); }
+  .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+  /* FORM */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+  .form-row.single { grid-template-columns: 1fr; }
+  label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 3px; }
+  input, select, textarea {
+    width: 100%; padding: 9px 11px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    color: var(--testo);
+    background: var(--bg);
+    outline: none;
+    transition: border .2s;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--verde-l); background: white; }
+  textarea { resize: vertical; min-height: 60px; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-verde { background: var(--verde); color: white; }
+  .btn-verde:hover { background: var(--verde-d); }
+  .btn-outline { background: transparent; color: var(--verde); border: 1.5px solid var(--verde); }
+  .btn-outline:hover { background: var(--verde-xl); }
+  .btn-sm { padding: 7px 13px; font-size: 12px; }
+  .btn-rosso { background: var(--rosso); color: white; }
+  .btn-oro { background: var(--oro); color: white; }
+  .btn-full { width: 100%; justify-content: center; margin-top: 8px; }
+
+  /* TABLE */
+  .table-wrap { overflow-x: auto; border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 400px; }
+  thead tr { background: var(--verde-d); }
+  th { padding: 9px 10px; color: white; font-weight: 700; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: var(--verde-xl); }
+
+  /* BADGES */
+  .badge {
+    display: inline-block; padding: 3px 9px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .b-ok { background: var(--verde-xl); color: var(--verde-d); }
+  .b-alto { background: var(--rosso-l); color: var(--rosso); }
+  .b-attenzione { background: var(--giallo-l); color: #856404; }
+  .b-nuovo { background: #e0f0ff; color: #1565c0; }
+  .b-food { background: var(--verde-xl); color: var(--verde-d); }
+  .b-bev { background: var(--giallo-l); color: #856404; }
+  .b-vegan { background: #fce4ec; color: #880e4f; }
+  .b-gf { background: #ede7f6; color: #4527a0; }
+
+  /* UPLOAD AREA */
+  .upload-zone {
+    border: 2px dashed var(--verde-l);
+    border-radius: var(--radius);
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    background: var(--verde-xl);
+    transition: all .2s;
+    margin-bottom: 1rem;
+  }
+  .upload-zone:hover { background: #b7e4c7; }
+  .upload-icon { font-size: 2.2rem; margin-bottom: .5rem; }
+  .upload-txt { font-size: .9rem; font-weight: 700; color: var(--verde-d); }
+  .upload-sub { font-size: .75rem; color: var(--muted); margin-top: 4px; }
+  #file-input { display: none; }
+
+  /* PIATTO CARD */
+  .piatto-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .9rem 1rem;
+    margin-bottom: .6rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .piatto-info { flex: 1; }
+  .piatto-nome { font-size: 13px; font-weight: 700; color: var(--testo); }
+  .piatto-cat { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .piatto-prezzo { font-size: 14px; font-weight: 700; color: var(--verde); min-width: 40px; text-align: right; }
+  .margine-bar { height: 5px; border-radius: 3px; background: var(--border); margin-top: 5px; overflow: hidden; }
+  .margine-fill { height: 100%; border-radius: 3px; background: var(--verde); transition: width .4s; }
+  .margine-fill.medio { background: var(--oro); }
+  .margine-fill.basso { background: var(--rosso); }
+
+  /* HACCP */
+  .haccp-tabs { display: flex; gap: 6px; margin-bottom: 1rem; }
+  .h-tab { padding: 7px 14px; border-radius: 20px; border: 1.5px solid var(--verde); font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; color: var(--verde); font-family: 'Lato', sans-serif; }
+  .h-tab.active { background: var(--verde); color: white; }
+
+  /* ALERT */
+  .alert { padding: .75rem 1rem; border-radius: 8px; font-size: 13px; margin-bottom: 1rem; }
+  .alert-ok { background: var(--verde-xl); color: var(--verde-d); border-left: 3px solid var(--verde); }
+  .alert-err { background: var(--rosso-l); color: var(--rosso); border-left: 3px solid var(--rosso); }
+  .alert-info { background: var(--giallo-l); color: #856404; border-left: 3px solid var(--oro); }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 2rem; color: var(--muted); font-size: 13px; }
+  .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--verde); border-radius: 50%; animation: spin .7s linear infinite; margin-right: 8px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* PRINT */
+  .btn-print { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+  .btn-print:hover { background: var(--bg); }
+
+  /* SEZIONE TITOLO */
+  .section-head { margin-bottom: 1rem; }
+  .section-head h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--verde-d); }
+  .section-head p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+  /* DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 1rem 0; }
+
+  /* CHIP */
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 1rem; }
+  .chip {
+    padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700;
+    cursor: pointer; border: 1.5px solid var(--border); background: var(--card); color: var(--muted);
+    transition: all .15s;
+  }
+  .chip.active { background: var(--verde); color: white; border-color: var(--verde); }
+
+  /* DRINK RICETTA */
+  .ricetta-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .ricetta-row input { flex: 1; }
+  .ricetta-row .unit-sel { max-width: 70px; }
+  .ricetta-row .btn-del { padding: 8px; font-size: 14px; background: var(--rosso-l); color: var(--rosso); border: none; border-radius: 6px; cursor: pointer; min-width: 32px; }
+
+  @media print {
+    .app-header, .nav-bar, .btn, .upload-zone, .form-row, .chips { display: none !important; }
+    .section { display: block !important; }
+    body { background: white; padding: 0; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+
+  @media (max-width: 480px) {
+    .stats-row { grid-template-columns: repeat(3, 1fr); gap: 5px; }
+    .stat-val { font-size: 1.1rem; }
+    .form-row.triple { grid-template-columns: 1fr 1fr; }
+    .content { padding: .75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-top">
+    <span class="cervo">🦌</span>
+    <span class="header-titolo">Lo Chalet · Gestionale</span>
+  </div>
+  <div class="header-sub">Monte Amiata · Stagione 2026</div>
+</div>
+
+<nav class="nav-bar">
+  <button class="nav-btn active" onclick="showSection('fatture',this)">📄 Fatture</button>
+  <button class="nav-btn" onclick="showSection('listino',this)">📊 Listino</button>
+  <button class="nav-btn" onclick="showSection('menu',this)">🍽️ Menu</button>
+  <button class="nav-btn" onclick="showSection('foodcost',this)">🍝 Food Cost</button>
+  <button class="nav-btn" onclick="showSection('drinkcost',this)">🍹 Drink</button>
+  <button class="nav-btn" onclick="showSection('haccp',this)">🌡️ HACCP</button>
+</nav>
+
+<div class="content">
+  <div id="msg-global" style="display:none"></div>
+
+  <!-- ============ FATTURE ============ -->
+  <div id="sec-fatture" class="section active">
+    <div class="section-head">
+      <h2>Fatture & DDT</h2>
+      <p>Inserisci ogni consegna — il listino si aggiorna in automatico</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val" id="st-fatture-n">—</div><div class="stat-lbl">Fatture</div></div>
+      <div class="stat-box"><div class="stat-val oro" id="st-fatture-tot">—</div><div class="stat-lbl">Spesa tot.</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-fornitori-n">—</div><div class="stat-lbl">Fornitori</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">➕</span> Nuova Fattura / DDT</div>
+      <div class="form-row">
+        <div><label>Data</label><input type="date" id="f-data"></div>
+        <div><label>Fornitore</label><input type="text" id="f-fornitore" placeholder="es. Sapori di Toscana" list="list-fornitori"><datalist id="list-fornitori"></datalist></div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Tipo</label>
+          <select id="f-tipo">
+            <option value="FOOD">FOOD</option>
+            <option value="BEVERAGE">BEVERAGE</option>
+            <option value="ALTRO">ALTRO</option>
+          </select>
+        </div>
+        <div><label>Articolo</label><input type="text" id="f-articolo" placeholder="es. Funghi Porcini" list="list-articoli"><datalist id="list-articoli"></datalist></div>
+      </div>
+      <div class="form-row triple">
+        <div><label>Qtà (kg/lt/pz)</label><input type="number" id="f-qty" step="0.001" placeholder="0.00"></div>
+        <div><label>Prezzo totale €</label><input type="number" id="f-prezzo" step="0.01" placeholder="0.00"></div>
+        <div><label>Lotto (opz.)</label><input type="text" id="f-lotto" placeholder="—"></div>
+      </div>
+      <div class="form-row single">
+        <div><label>Note</label><input type="text" id="f-note" placeholder="Facoltativo"></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-verde" onclick="addFattura()">💾 Salva</button>
+        <button class="btn btn-outline btn-sm" onclick="clearFattura()">✕ Cancella</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">📋</span> Storico</div>
+      <div class="chips" id="filtro-tipo">
+        <button class="chip active" onclick="filtraFatture('all',this)">Tutti</button>
+        <button class="chip" onclick="filtraFatture('FOOD',this)">Food</button>
+        <button class="chip" onclick="filtraFatture('BEVERAGE',this)">Beverage</button>
+        <button class="chip" onclick="filtraFatture('ALTRO',this)">Altro</button>
+      </div>
+      <div class="table-wrap" id="tbl-fatture-wrap">
+        <div class="loading"><span class="spinner"></span>Carico...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ LISTINO ============ -->
+  <div id="sec-listino" class="section">
+    <div class="section-head">
+      <h2>Listino Prezzi</h2>
+      <p>Aggiornato automaticamente ad ogni fattura caricata</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="card-icon">📊</span> Prezzi correnti</div>
+      <div class="chips" id="filtro-listino">
+        <button class="chip active" onclick="filtraListino('all',this)">Tutti</button>
+        <button class="chip" onclick="filtraListino('OK',this)">✅ OK</button>
+        <button class="chip" onclick="filtraListino('ALTO',this)">🔴 Aumentati</button>
+        <button class="chip" onclick="filtraListino('SCESO',this)">🟢 Scesi</button>
+        <button class="chip" onclick="filtraListino('NUOVO',this)">🔵 Nuovi</button>
+      </div>
+      <div class="table-wrap" id="tbl-listino-wrap">
+        <div class="loading"><span class="spinner"></span>Carico...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MENU ============ -->
+  <div id="sec-menu" class="section">
+    <div class="section-head">
+      <h2>Menu</h2>
+      <p>Gestisci i piatti — attiva/disattiva per stagione</p>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="card-icon">➕</span> Aggiungi Piatto</div>
+      <div class="form-row">
+        <div><label>Nome piatto</label><input type="text" id="m-nome" placeholder="es. Pici al Ragù di Cinghiale"></div>
+        <div>
+          <label>Categoria</label>
+          <select id="m-cat">
+            <option>Crostoni</option><option>Taglieri</option><option>Primi</option>
+            <option>Secondi</option><option>Contorni</option><option>Dolci</option>
+            <option>Panini/Schiacce</option><option>Insalate</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Menu</label>
+          <select id="m-tipo">
+            <option value="entrambi">Entrambi</option>
+            <option value="tavolo">Solo Tavolo</option>
+            <option value="self">Solo Self-Service</option>
+          </select>
+        </div>
+        <div><label>Prezzo €</label><input type="number" id="m-prezzo" step="0.5" placeholder="0.00"></div>
+      </div>
+      <div class="form-row">
+        <div style="display:flex;align-items:center;gap:8px;padding-top:20px">
+          <input type="checkbox" id="m-vegan" style="width:auto"> <label style="text-transform:none;font-size:13px" for="m-vegan">Vegan/Vegetariano</label>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding-top:20px">
+          <input type="checkbox" id="m-gf" style="width:auto"> <label style="text-transform:none;font-size:13px" for="m-gf">Gluten Free</label>
+        </div>
+      </div>
+      <button class="btn btn-verde" onclick="addPiatto()">➕ Aggiungi</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🍽️</span> Piatti del Menu</div>
+      <div class="chips" id="filtro-menu">
+        <button class="chip active" onclick="filtraMenu('all',this)">Tutti</button>
+        <button class="chip" onclick="filtraMenu('Primi',this)">Primi</button>
+        <button class="chip" onclick="filtraMenu('Secondi',this)">Secondi</button>
+        <button class="chip" onclick="filtraMenu('Crostoni',this)">Crostoni</button>
+        <button class="chip" onclick="filtraMenu('Dolci',this)">Dolci</button>
+        <button class="chip" onclick="filtraMenu('Contorni',this)">Contorni</button>
+      </div>
+      <div id="list-menu"><div class="loading"><span class="spinner"></span>Carico...</div></div>
+      <button class="btn btn-verde btn-full" onclick="saveMenu()" style="margin-top:1rem">💾 Salva Menu su Google Sheets</button>
+    </div>
+  </div>
+
+  <!-- ============ FOOD COST ============ -->
+  <div id="sec-foodcost" class="section">
+    <div class="section-head">
+      <h2>Food Cost</h2>
+      <p>Calcola il margine di ogni piatto — prezzi dal listino</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val oro" id="st-fc-avg">—</div><div class="stat-lbl">Food cost medio</div></div>
+      <div class="stat-box"><div class="stat-val verde" id="st-fc-margine">—</div><div class="stat-lbl">Margine medio</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-fc-piatti">—</div><div class="stat-lbl">Piatti analizzati</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🍝</span> Nuovo Piatto da Analizzare</div>
+      <div class="form-row">
+        <div>
+          <label>Piatto</label>
+          <select id="fc-piatto">
+            <option value="">Seleziona dal menu...</option>
+          </select>
+        </div>
+        <div><label>Prezzo menu €</label><input type="number" id="fc-prezzo" step="0.5" placeholder="0.00"></div>
+      </div>
+      <div id="fc-ingredienti">
+        <label style="margin-bottom:6px;display:block">Ingredienti</label>
+        <div id="fc-ing-list"></div>
+        <button class="btn btn-outline btn-sm" onclick="addIngrediente('fc-ing-list','fc')">➕ Aggiungi ingrediente</button>
+      </div>
+      <button class="btn btn-verde btn-full" onclick="calcolaFoodCost()">📊 Calcola e Salva</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🏆</span> Classifica Piatti per Margine</div>
+      <div id="list-foodcost"><div class="loading"><span class="spinner"></span>Carico...</div></div>
+    </div>
+  </div>
+
+  <!-- ============ DRINK COST ============ -->
+  <div id="sec-drinkcost" class="section">
+    <div class="section-head">
+      <h2>Drink Cost</h2>
+      <p>Ricette cocktail e analisi margine</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-val oro" id="st-dc-avg">—</div><div class="stat-lbl">Drink cost medio</div></div>
+      <div class="stat-box"><div class="stat-val verde" id="st-dc-margine">—</div><div class="stat-lbl">Margine medio</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-dc-n">—</div><div class="stat-lbl">Cocktail</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🍹</span> Nuovo Cocktail</div>
+      <div class="form-row">
+        <div><label>Nome cocktail</label><input type="text" id="dc-nome" placeholder="es. Gin Amiata Tonic"></div>
+        <div><label>Prezzo vendita €</label><input type="number" id="dc-prezzo" step="0.5" placeholder="0.00"></div>
+      </div>
+      <div id="dc-ingredienti">
+        <label style="margin-bottom:6px;display:block">Ricetta</label>
+        <div id="dc-ing-list"></div>
+        <button class="btn btn-outline btn-sm" onclick="addIngrediente('dc-ing-list','dc')">➕ Aggiungi ingrediente</button>
+      </div>
+      <button class="btn btn-verde btn-full" onclick="calcolaDrinkCost()">📊 Calcola e Salva</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="card-icon">🏆</span> Classifica Cocktail</div>
+      <div id="list-drinkcost"><div class="loading"><span class="spinner"></span>Carico...</div></div>
+    </div>
+  </div>
+
+  <!-- ============ HACCP ============ -->
+  <div id="sec-haccp" class="section">
+    <div class="section-head">
+      <h2>Registro HACCP</h2>
+      <p>Tracciabilità e controllo temperature — conforme normativa italiana</p>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+      <label style="font-size:12px;color:var(--muted)">Data:</label>
+      <input type="date" id="haccp-data" style="width:auto;max-width:160px" onchange="loadHaccp()">
+      <button class="btn btn-outline btn-sm btn-print" onclick="window.print()">🖨️ Stampa</button>
+    </div>
+
+    <div class="haccp-tabs">
+      <button class="h-tab active" onclick="showHaccpTab('temp',this)">🌡️ Temperature</button>
+      <button class="h-tab" onclick="showHaccpTab('prep',this)">🍳 Preparazioni</button>
+    </div>
+
+    <!-- TEMPERATURE -->
+    <div id="htab-temp">
+      <div class="card">
+        <div class="card-title"><span class="card-icon">➕</span> Nuova Rilevazione Temperatura</div>
+        <div class="form-row">
+          <div><label>Ora</label><input type="time" id="h-ora"></div>
+          <div>
+            <label>Punto di controllo</label>
+            <select id="h-punto">
+              <option>Frigo carni</option>
+              <option>Frigo pesce</option>
+              <option>Cella verdure</option>
+              <option>Cella bevande</option>
+              <option>Abbattitore</option>
+              <option>Freezer</option>
+              <option>Temperatura cottura</option>
+              <option>Temperatura centro alimento</option>
+              <option>Altro</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row triple">
+          <div><label>Temp. rilevata °C</label><input type="number" id="h-temp" step="0.1" placeholder="es. +4"></div>
+          <div><label>Limite min °C</label><input type="number" id="h-limmin" step="1" placeholder="opzionale"></div>
+          <div><label>Limite max °C</label><input type="number" id="h-limmax" step="1" placeholder="es. +4"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Operatore</label><input type="text" id="h-operatore" placeholder="Iniziali o nome"></div>
+          <div><label>Note</label><input type="text" id="h-note" placeholder="Facoltativo"></div>
+        </div>
+        <button class="btn btn-verde" onclick="addHaccp()">💾 Registra</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="card-icon">📋</span> Registro Temperature</div>
+        <div class="table-wrap" id="tbl-haccp-wrap">
+          <div class="loading"><span class="spinner"></span>Carico...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREPARAZIONI -->
+    <div id="htab-prep" style="display:none">
+      <div class="card">
+        <div class="card-title"><span class="card-icon">➕</span> Nuova Scheda Preparazione</div>
+        <div class="form-row">
+          <div><label>Ora</label><input type="time" id="hp-ora"></div>
+          <div><label>Preparazione</label><input type="text" id="hp-prep" placeholder="es. Ragù di Cinghiale"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Lotto materia prima</label><input type="text" id="hp-lotto" placeholder="N° lotto fornitore"></div>
+          <div><label>Quantità preparata</label><input type="text" id="hp-qty" placeholder="es. 3 kg"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Temp. cottura °C</label><input type="number" id="hp-temp" step="1" placeholder="es. 75°C al cuore"></div>
+          <div>
+            <label>Modalità abbattimento</label>
+            <select id="hp-abbatt">
+              <option value="">— nessuno —</option>
+              <option>Abbattimento rapido (+3°C in 90 min)</option>
+              <option>Refrigerazione normale</option>
+              <option>Congelamento</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div><label>Data scadenza utilizzo</label><input type="date" id="hp-scad"></div>
+          <div><label>Operatore</label><input type="text" id="hp-op" placeholder="Nome o iniziali"></div>
+        </div>
+        <button class="btn btn-verde" onclick="addPrep()">💾 Registra</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="card-icon">📋</span> Schede Preparazione</div>
+        <div class="table-wrap" id="tbl-prep-wrap">
+          <div class="loading"><span class="spinner"></span>Carico...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<script>
+const SCRIPT_URL = 'TUO_SCRIPT_URL_QUI';
+
+// ===================== STATO =====================
+let fatture = [], listino = [], menuItems = [], foodcosts = [], drinkcosts = [];
+let filtroFatture = 'all', filtroListino = 'all', filtroMenu = 'all';
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+  const oggi = new Date().toISOString().split('T')[0];
+  document.getElementById('f-data').value = oggi;
+  document.getElementById('haccp-data').value = oggi;
+  caricaFatture();
+  caricaMenu();
+});
+
+// ===================== NAV =====================
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'listino') caricaListino();
+  if (id === 'foodcost') { caricaFoodCost(); popPiattiSelect(); }
+  if (id === 'drinkcost') caricaDrinkCost();
+  if (id === 'haccp') loadHaccp();
+}
+
+// ===================== API =====================
+async function api(params) {
+  const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+  try {
+    const r = await fetch(url);
+    return await r.json();
+  } catch(e) {
+    return {ok: false, msg: 'Errore connessione: ' + e.message};
+  }
+}
+
+function showMsg(txt, type='ok') {
+  const el = document.getElementById('msg-global');
+  el.className = 'alert alert-' + type;
+  el.textContent = txt;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+// ===================== FATTURE =====================
+async function caricaFatture() {
+  const res = await api({action:'getFatture', tipo:'all'});
+  if (res.ok) {
+    fatture = res.data;
+    aggiornaTblFatture();
+    aggiornaStatsFatture();
+    popolaDatalist();
+  }
+}
+
+function aggiornaStatsFatture() {
+  const f = filtroFatture === 'all' ? fatture : fatture.filter(x=>x.tipo===filtroFatture);
+  const tot = f.reduce((s,x) => s + (parseFloat(x.prezzoTot)||0), 0);
+  const fornitori = new Set(f.map(x=>x.fornitore)).size;
+  document.getElementById('st-fatture-n').textContent = f.length;
+  document.getElementById('st-fatture-tot').textContent = '€' + tot.toFixed(0);
+  document.getElementById('st-fornitori-n').textContent = fornitori;
+}
+
+function aggiornaTblFatture() {
+  const f = filtroFatture === 'all' ? fatture : fatture.filter(x=>x.tipo===filtroFatture);
+  const wrap = document.getElementById('tbl-fatture-wrap');
+  if (!f.length) { wrap.innerHTML = '<div class="alert alert-info">Nessuna fattura ancora — inserisci la prima!</div>'; return; }
+  const rows = f.slice().reverse().map(r => `
+    <tr>
+      <td>${r.data}</td>
+      <td><strong>${r.fornitore}</strong></td>
+      <td><span class="badge ${r.tipo==='FOOD'?'b-food':'b-bev'}">${r.tipo}</span></td>
+      <td>${r.articolo}</td>
+      <td>${r.qty} kg</td>
+      <td><strong>€${parseFloat(r.prezzoKg).toFixed(2)}/kg</strong></td>
+      <td>€${parseFloat(r.prezzoTot).toFixed(2)}</td>
+    </tr>`).join('');
+  wrap.innerHTML = `<table><thead><tr><th>Data</th><th>Fornitore</th><th>Tipo</th><th>Articolo</th><th>Qtà</th><th>€/Kg</th><th>Totale</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function filtraFatture(tipo, btn) {
+  filtroFatture = tipo;
+  document.querySelectorAll('#filtro-tipo .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  aggiornaTblFatture();
+  aggiornaStatsFatture();
+}
+
+function popolaDatalist() {
+  const fornitori = [...new Set(fatture.map(f=>f.fornitore))];
+  const articoli = [...new Set(fatture.map(f=>f.articolo))];
+  document.getElementById('list-fornitori').innerHTML = fornitori.map(f=>`<option value="${f}">`).join('');
+  document.getElementById('list-articoli').innerHTML = articoli.map(a=>`<option value="${a}">`).join('');
+}
+
+async function addFattura() {
+  const data = document.getElementById('f-data').value;
+  const fornitore = document.getElementById('f-fornitore').value.trim();
+  const tipo = document.getElementById('f-tipo').value;
+  const articolo = document.getElementById('f-articolo').value.trim();
+  const qty = document.getElementById('f-qty').value;
+  const prezzo = document.getElementById('f-prezzo').value;
+  const lotto = document.getElementById('f-lotto').value;
+  const note = document.getElementById('f-note').value;
+  if (!data||!fornitore||!articolo||!qty||!prezzo) { showMsg('Compila tutti i campi obbligatori','err'); return; }
+  const res = await api({action:'addFattura',data,fornitore,tipo,articolo,qty,prezzoTot:prezzo,lotto,note});
+  if (res.ok) { showMsg('Fattura salvata! Listino aggiornato.','ok'); clearFattura(); caricaFatture(); }
+  else showMsg(res.msg,'err');
+}
+
+function clearFattura() {
+  ['f-fornitore','f-articolo','f-qty','f-prezzo','f-lotto','f-note'].forEach(id => document.getElementById(id).value='');
+}
+
+// ===================== LISTINO =====================
+async function caricaListino() {
+  const res = await api({action:'getListino'});
+  if (res.ok) { listino = res.data; aggiornaTblListino(); }
+}
+
+function filtraListino(stato, btn) {
+  filtroListino = stato;
+  document.querySelectorAll('#filtro-listino .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  aggiornaTblListino();
+}
+
+function aggiornaTblListino() {
+  const l = filtroListino === 'all' ? listino : listino.filter(x=>x.stato===filtroListino);
+  const wrap = document.getElementById('tbl-listino-wrap');
+  if (!l.length) { wrap.innerHTML = '<div class="alert alert-info">Nessun articolo ancora — carica la prima fattura!</div>'; return; }
+  const rows = l.map(r => {
+    const stato = r.stato==='OK'?'b-ok':r.stato==='ALTO'?'b-alto':r.stato==='SCESO'?'b-ok':'b-nuovo';
+    const varTxt = r.variazione > 0 ? '+' + r.variazione.toFixed(2) : r.variazione.toFixed(2);
+    return `<tr>
+      <td><strong>${r.articolo}</strong></td>
+      <td>${r.fornitore}</td>
+      <td><strong>€${r.prezzoAttuale.toFixed(2)}</strong></td>
+      <td style="color:${r.variazione>0?'var(--rosso)':r.variazione<0?'var(--verde)':'var(--muted)'}">${r.prezzoPrec?varTxt:'—'}</td>
+      <td><span class="badge ${stato}">${r.stato}</span></td>
+      <td style="color:var(--muted);font-size:11px">${r.aggiornamento}</td>
+    </tr>`;
+  }).join('');
+  wrap.innerHTML = `<table><thead><tr><th>Articolo</th><th>Fornitore</th><th>€/Kg</th><th>Variaz.</th><th>Stato</th><th>Aggiorn.</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+// ===================== MENU =====================
+const menuBase = [
+  {nome:'Crostone Speck & Brie',categoria:'Crostoni',tipo:'entrambi',prezzo:8,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Crostone Pecorino & Pera Picciola',categoria:'Crostoni',tipo:'entrambi',prezzo:8,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Crostone Ai Porcini',categoria:'Crostoni',tipo:'entrambi',prezzo:8,attivo:true,vegan:true,glutenFree:false},
+  {nome:'Crostone Lardo & Miele di Castagno',categoria:'Crostoni',tipo:'entrambi',prezzo:8,attivo:true,vegan:false,glutenFree:false},
+  {nome:'#Porchettacheparla',categoria:'Panini/Schiacce',tipo:'entrambi',prezzo:0,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Tagliere Salumi',categoria:'Taglieri',tipo:'entrambi',prezzo:0,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Tagliere Formaggi',categoria:'Taglieri',tipo:'entrambi',prezzo:0,attivo:true,vegan:true,glutenFree:false},
+  {nome:'Tagliere Misto',categoria:'Taglieri',tipo:'entrambi',prezzo:0,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Pici Ragù Bianco di Cinta Senese',categoria:'Primi',tipo:'entrambi',prezzo:12,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Pici dello Chalet (Cinta + Porcini)',categoria:'Primi',tipo:'tavolo',prezzo:13,attivo:true,vegan:false,glutenFree:false},
+  {nome:"Pici All'Aglione della Val di Chiana",categoria:'Primi',tipo:'entrambi',prezzo:10,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Tagliatelle al Ragù',categoria:'Primi',tipo:'entrambi',prezzo:10,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Tagliatelle ai Porcini',categoria:'Primi',tipo:'entrambi',prezzo:13,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Zuppa Funghi & Castagne',categoria:'Primi',tipo:'entrambi',prezzo:12,attivo:true,vegan:true,glutenFree:true},
+  {nome:'Polenta Ragù',categoria:'Primi',tipo:'entrambi',prezzo:10,attivo:true,vegan:false,glutenFree:true},
+  {nome:'Polenta ai Porcini',categoria:'Primi',tipo:'entrambi',prezzo:12,attivo:true,vegan:true,glutenFree:true},
+  {nome:'Polenta con Cinghiale',categoria:'Primi',tipo:'entrambi',prezzo:10,attivo:true,vegan:false,glutenFree:true},
+  {nome:'Lasagna Ragù',categoria:'Primi',tipo:'self',prezzo:10,attivo:false,vegan:false,glutenFree:false},
+  {nome:'Lasagna Vegetariana',categoria:'Primi',tipo:'self',prezzo:10,attivo:false,vegan:true,glutenFree:false},
+  {nome:'Cinghiale in Umido',categoria:'Secondi',tipo:'entrambi',prezzo:10,attivo:true,vegan:false,glutenFree:true},
+  {nome:'Maialino con le Castagne',categoria:'Secondi',tipo:'entrambi',prezzo:11,attivo:true,vegan:false,glutenFree:true},
+  {nome:'Trippa alla Parmigiana',categoria:'Secondi',tipo:'tavolo',prezzo:12,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Polpette Cinta Senese All\'Aglione',categoria:'Secondi',tipo:'entrambi',prezzo:10,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Tagliata Olio di Seggiano D.O.P.',categoria:'Secondi',tipo:'entrambi',prezzo:15,attivo:true,vegan:false,glutenFree:true},
+  {nome:'Tagliata ai Funghi Porcini',categoria:'Secondi',tipo:'entrambi',prezzo:20,attivo:true,vegan:false,glutenFree:true},
+  {nome:'Cotoletta di Pollo + Contorno',categoria:'Secondi',tipo:'entrambi',prezzo:9,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Tagliata di Pollo Rucola & Grana',categoria:'Secondi',tipo:'entrambi',prezzo:10,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Sformato di Verdure',categoria:'Secondi',tipo:'entrambi',prezzo:9,attivo:true,vegan:true,glutenFree:true},
+  {nome:'Mozzarella Chalet (con Speck)',categoria:'Insalate',tipo:'estivo',prezzo:12,attivo:false,vegan:false,glutenFree:true},
+  {nome:'Mozzarella Chalet Vegetariana',categoria:'Insalate',tipo:'estivo',prezzo:11,attivo:false,vegan:true,glutenFree:true},
+  {nome:'Patatine Fritte',categoria:'Contorni',tipo:'entrambi',prezzo:4,attivo:true,vegan:true,glutenFree:true},
+  {nome:'Porcini Fritti',categoria:'Contorni',tipo:'entrambi',prezzo:9,attivo:true,vegan:true,glutenFree:false},
+  {nome:'Carciofi Fritti',categoria:'Contorni',tipo:'entrambi',prezzo:6,attivo:true,vegan:true,glutenFree:false},
+  {nome:'Verdure Lesse o Grigliate',categoria:'Contorni',tipo:'entrambi',prezzo:4,attivo:true,vegan:true,glutenFree:true},
+  {nome:'Ricciolina Stratosferica',categoria:'Dolci',tipo:'entrambi',prezzo:4,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Torta Frutti di Bosco',categoria:'Dolci',tipo:'entrambi',prezzo:5,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Torta Pera & Cioccolato',categoria:'Dolci',tipo:'entrambi',prezzo:5,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Cheesecake ai Fichi',categoria:'Dolci',tipo:'entrambi',prezzo:5,attivo:true,vegan:false,glutenFree:false},
+  {nome:'Tiramisù Gluten Free',categoria:'Dolci',tipo:'tavolo',prezzo:5,attivo:true,vegan:false,glutenFree:true},
+  {nome:'Crostata Albicocche o More',categoria:'Dolci',tipo:'entrambi',prezzo:4,attivo:true,vegan:false,glutenFree:false},
+];
+
+async function caricaMenu() {
+  const res = await api({action:'getMenu'});
+  if (res.ok && res.data.length) { menuItems = res.data; }
+  else { menuItems = menuBase.map(x=>({...x})); }
+  renderMenu();
+  popPiattiSelect();
+}
+
+function renderMenu() {
+  const items = filtroMenu==='all' ? menuItems : menuItems.filter(x=>x.categoria===filtroMenu);
+  const el = document.getElementById('list-menu');
+  if (!items.length) { el.innerHTML='<div class="alert alert-info">Nessun piatto in questa categoria</div>'; return; }
+  el.innerHTML = items.map((p,i) => {
+    const idx = menuItems.indexOf(p);
+    return `<div class="piatto-card" style="opacity:${p.attivo?1:.5}">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <input type="checkbox" ${p.attivo?'checked':''} onchange="togglePiatto(${idx})" style="width:auto;cursor:pointer" title="Attivo/Disattivo">
+      </div>
+      <div class="piatto-info">
+        <div class="piatto-nome">${p.nome}</div>
+        <div class="piatto-cat">${p.categoria} · ${p.tipo}${p.vegan?' · 🌿':''} ${p.glutenFree?'· GF':''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="piatto-prezzo">${p.prezzo?'€'+p.prezzo:'—'}</span>
+        <button class="btn btn-sm" style="background:var(--rosso-l);color:var(--rosso);border:none;padding:5px 9px;border-radius:6px" onclick="rimuoviPiatto(${idx})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePiatto(idx) { menuItems[idx].attivo = !menuItems[idx].attivo; renderMenu(); }
+function rimuoviPiatto(idx) { menuItems.splice(idx,1); renderMenu(); popPiattiSelect(); }
+function filtraMenu(cat, btn) {
+  filtroMenu = cat;
+  document.querySelectorAll('#filtro-menu .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderMenu();
+}
+
+function addPiatto() {
+  const nome = document.getElementById('m-nome').value.trim();
+  if (!nome) { showMsg('Inserisci il nome del piatto','err'); return; }
+  menuItems.push({
+    nome, categoria: document.getElementById('m-cat').value,
+    tipo: document.getElementById('m-tipo').value,
+    prezzo: parseFloat(document.getElementById('m-prezzo').value)||0,
+    attivo: true,
+    vegan: document.getElementById('m-vegan').checked,
+    glutenFree: document.getElementById('m-gf').checked
+  });
+  document.getElementById('m-nome').value='';
+  document.getElementById('m-prezzo').value='';
+  renderMenu(); popPiattiSelect();
+}
+
+async function saveMenu() {
+  const res = await api({action:'saveMenu', items: JSON.stringify(menuItems)});
+  if (res.ok) showMsg('Menu salvato su Google Sheets!','ok');
+  else showMsg(res.msg,'err');
+}
+
+function popPiattiSelect() {
+  const sel = document.getElementById('fc-piatto');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Seleziona dal menu...</option>' +
+    menuItems.filter(x=>x.attivo).map(x=>`<option value="${x.nome}" data-prezzo="${x.prezzo}">${x.nome} — €${x.prezzo}</option>`).join('');
+  sel.onchange = () => {
+    const opt = sel.options[sel.selectedIndex];
+    if (opt.dataset.prezzo) document.getElementById('fc-prezzo').value = opt.dataset.prezzo;
+  };
+}
+
+// ===================== FOOD COST =====================
+function addIngrediente(containerId, prefix) {
+  const div = document.createElement('div');
+  div.className = 'ricetta-row';
+  div.innerHTML = `
+    <input type="text" placeholder="Ingrediente" list="list-articoli" style="flex:2">
+    <input type="number" step="0.001" placeholder="Qtà" style="flex:1;min-width:60px">
+    <select class="unit-sel">
+      <option>kg</option><option>g</option><option>lt</option><option>cl</option><option>pz</option>
+    </select>
+    <input type="number" step="0.001" placeholder="€/kg" style="flex:1;min-width:60px">
+    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>`;
+  document.getElementById(containerId).appendChild(div);
+}
+
+async function caricaFoodCost() {
+  const res = await api({action:'getFoodCost'});
+  if (res.ok) { foodcosts = res.data; renderFoodCost(); }
+}
+
+function renderFoodCost() {
+  const el = document.getElementById('list-foodcost');
+  if (!foodcosts.length) { el.innerHTML='<div class="alert alert-info">Nessun piatto analizzato ancora</div>'; return; }
+  const sorted = foodcosts.slice().sort((a,b)=>b.marginePerc-a.marginePerc);
+  const avgFC = sorted.reduce((s,x)=>s+(100-x.marginePerc),0)/sorted.length;
+  const avgMarg = sorted.reduce((s,x)=>s+x.marginePerc,0)/sorted.length;
+  document.getElementById('st-fc-avg').textContent = avgFC.toFixed(0)+'%';
+  document.getElementById('st-fc-margine').textContent = avgMarg.toFixed(0)+'%';
+  document.getElementById('st-fc-piatti').textContent = sorted.length;
+  el.innerHTML = sorted.map(p => {
+    const perc = parseFloat(p.marginePerc)||0;
+    const cls = perc>=75?'':'perc>=60?'medio':'basso';
+    return `<div class="piatto-card">
+      <div class="piatto-info">
+        <div class="piatto-nome">${p.piatto}</div>
+        <div class="piatto-cat">Costo: €${parseFloat(p.costoFinale).toFixed(2)} · Prezzo: €${p.prezzoMenu}</div>
+        <div class="margine-bar"><div class="margine-fill ${cls}" style="width:${Math.min(perc,100)}%"></div></div>
+      </div>
+      <div class="piatto-prezzo">${perc.toFixed(0)}%</div>
+    </div>`;
+  }).join('');
+}
+
+async function calcolaFoodCost() {
+  const piatto = document.getElementById('fc-piatto').value;
+  const prezzo = document.getElementById('fc-prezzo').value;
+  if (!piatto||!prezzo) { showMsg('Seleziona piatto e prezzo','err'); return; }
+  const rows = document.querySelectorAll('#fc-ing-list .ricetta-row');
+  if (!rows.length) { showMsg('Aggiungi almeno un ingrediente','err'); return; }
+  const ingredienti = Array.from(rows).map(r => {
+    const inputs = r.querySelectorAll('input');
+    const sel = r.querySelector('select');
+    return {nome:inputs[0].value, qty:inputs[1].value, unit:sel.value, costoUnit:inputs[2].value};
+  }).filter(i=>i.nome&&i.qty);
+  const res = await api({action:'saveFoodCost', piatti: JSON.stringify([{piatto, prezzoMenu:prezzo, ingredienti}])});
+  if (res.ok) { showMsg('Food cost salvato!','ok'); caricaFoodCost(); document.getElementById('fc-ing-list').innerHTML=''; }
+  else showMsg(res.msg,'err');
+}
+
+// ===================== DRINK COST =====================
+async function caricaDrinkCost() {
+  const res = await api({action:'getDrinkCost'});
+  if (res.ok) { drinkcosts = res.data; renderDrinkCost(); }
+}
+
+function renderDrinkCost() {
+  const el = document.getElementById('list-drinkcost');
+  if (!drinkcosts.length) { el.innerHTML='<div class="alert alert-info">Nessun cocktail ancora — aggiungi il primo!</div>'; return; }
+  const sorted = drinkcosts.slice().sort((a,b)=>b.marginePerc-a.marginePerc);
+  const avgDC = sorted.reduce((s,x)=>s+(100-x.marginePerc),0)/sorted.length;
+  const avgMarg = sorted.reduce((s,x)=>s+x.marginePerc,0)/sorted.length;
+  document.getElementById('st-dc-avg').textContent = avgDC.toFixed(0)+'%';
+  document.getElementById('st-dc-margine').textContent = avgMarg.toFixed(0)+'%';
+  document.getElementById('st-dc-n').textContent = sorted.length;
+  el.innerHTML = sorted.map(d => {
+    const perc = parseFloat(d.marginePerc)||0;
+    const ingList = d.ingredienti.map(i=>`${i.nome} ${i.dose}${i.unit}`).join(' · ');
+    return `<div class="piatto-card">
+      <div class="piatto-info">
+        <div class="piatto-nome">${d.nome}</div>
+        <div class="piatto-cat" style="font-size:10px">${ingList}</div>
+        <div class="piatto-cat">Costo: €${parseFloat(d.margine?d.prezzoVendita-d.margine:0).toFixed(2)} · Vendita: €${d.prezzoVendita}</div>
+        <div class="margine-bar"><div class="margine-fill ${perc>=75?'':'perc>=60?'medio':'basso'}" style="width:${Math.min(perc,100)}%"></div></div>
+      </div>
+      <div class="piatto-prezzo">${perc.toFixed(0)}%</div>
+    </div>`;
+  }).join('');
+}
+
+async function calcolaDrinkCost() {
+  const nome = document.getElementById('dc-nome').value.trim();
+  const prezzo = document.getElementById('dc-prezzo').value;
+  if (!nome||!prezzo) { showMsg('Inserisci nome e prezzo','err'); return; }
+  const rows = document.querySelectorAll('#dc-ing-list .ricetta-row');
+  if (!rows.length) { showMsg('Aggiungi almeno un ingrediente','err'); return; }
+  const ingredienti = Array.from(rows).map(r => {
+    const inputs = r.querySelectorAll('input');
+    const sel = r.querySelector('select');
+    return {nome:inputs[0].value, dose:inputs[1].value, unit:sel.value, costoUnit:inputs[2].value};
+  }).filter(i=>i.nome&&i.dose);
+  const res = await api({action:'saveDrinkCost', drinks: JSON.stringify([{nome, prezzoVendita:prezzo, ingredienti}])});
+  if (res.ok) { showMsg('Drink cost salvato!','ok'); caricaDrinkCost(); document.getElementById('dc-nome').value=''; document.getElementById('dc-prezzo').value=''; document.getElementById('dc-ing-list').innerHTML=''; }
+  else showMsg(res.msg,'err');
+}
+
+// ===================== HACCP =====================
+function showHaccpTab(id, btn) {
+  document.getElementById('htab-temp').style.display = id==='temp'?'block':'none';
+  document.getElementById('htab-prep').style.display = id==='prep'?'block':'none';
+  document.querySelectorAll('.h-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if (id==='temp') caricaHaccp();
+  else caricaPrep();
+}
+
+async function loadHaccp() { caricaHaccp(); }
+
+async function caricaHaccp() {
+  const data = document.getElementById('haccp-data').value;
+  const res = await api({action:'getHaccp', data});
+  const wrap = document.getElementById('tbl-haccp-wrap');
+  if (!res.ok) { wrap.innerHTML='<div class="alert alert-err">Errore: '+res.msg+'</div>'; return; }
+  if (!res.data.length) { wrap.innerHTML='<div class="alert alert-info">Nessuna rilevazione per questa data — inserisci la prima!</div>'; return; }
+  const rows = res.data.map(r=>`<tr>
+    <td><strong>${r.ora}</strong></td>
+    <td>${r.punto}</td>
+    <td><strong>${r.temp}°C</strong></td>
+    <td>${r.limMin||'—'} / ${r.limMax||'—'}</td>
+    <td><span class="badge ${r.esito==='OK'?'b-ok':'b-alto'}">${r.esito}</span></td>
+    <td>${r.operatore}</td>
+    <td style="color:var(--muted);font-size:11px">${r.note}</td>
+  </tr>`).join('');
+  wrap.innerHTML=`<table><thead><tr><th>Ora</th><th>Punto</th><th>Temp.</th><th>Min/Max</th><th>Esito</th><th>Operatore</th><th>Note</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function addHaccp() {
+  const data = document.getElementById('haccp-data').value;
+  const ora = document.getElementById('h-ora').value;
+  const punto = document.getElementById('h-punto').value;
+  const temp = document.getElementById('h-temp').value;
+  const operatore = document.getElementById('h-operatore').value;
+  if (!ora||!temp) { showMsg('Ora e temperatura sono obbligatori','err'); return; }
+  const res = await api({
+    action:'addHaccp', data, ora, punto, temp,
+    limMin: document.getElementById('h-limmin').value,
+    limMax: document.getElementById('h-limmax').value,
+    operatore, note: document.getElementById('h-note').value
+  });
+  if (res.ok) {
+    const esito = res.esito;
+    showMsg('Rilevazione salvata — Esito: ' + esito, esito==='OK'?'ok':'err');
+    caricaHaccp();
+    document.getElementById('h-temp').value='';
+    document.getElementById('h-note').value='';
+  } else showMsg(res.msg,'err');
+}
+
+async function caricaPrep() {
+  const data = document.getElementById('haccp-data').value;
+  const res = await api({action:'getHaccpPrep', data});
+  const wrap = document.getElementById('tbl-prep-wrap');
+  if (!res.ok) { wrap.innerHTML='<div class="alert alert-err">Errore: '+res.msg+'</div>'; return; }
+  if (!res.data.length) { wrap.innerHTML='<div class="alert alert-info">Nessuna scheda per questa data</div>'; return; }
+  const rows = res.data.map(r=>`<tr>
+    <td><strong>${r.ora}</strong></td>
+    <td><strong>${r.prep}</strong></td>
+    <td style="font-size:11px">${r.lotto||'—'}</td>
+    <td>${r.qty||'—'}</td>
+    <td>${r.tempCottura?r.tempCottura+'°C':'—'}</td>
+    <td style="font-size:11px">${r.modAbbattimento||'—'}</td>
+    <td>${r.scadenza||'—'}</td>
+    <td>${r.operatore||'—'}</td>
+  </tr>`).join('');
+  wrap.innerHTML=`<table><thead><tr><th>Ora</th><th>Preparazione</th><th>Lotto</th><th>Qtà</th><th>T°Cottura</th><th>Abbattimento</th><th>Scadenza</th><th>Operatore</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+async function addPrep() {
+  const data = document.getElementById('haccp-data').value;
+  const ora = document.getElementById('hp-ora').value;
+  const prep = document.getElementById('hp-prep').value.trim();
+  if (!ora||!prep) { showMsg('Ora e preparazione sono obbligatori','err'); return; }
+  const res = await api({
+    action:'addHaccpPrep', data, ora, prep,
+    lotto: document.getElementById('hp-lotto').value,
+    qty: document.getElementById('hp-qty').value,
+    tempCottura: document.getElementById('hp-temp').value,
+    modAbbattimento: document.getElementById('hp-abbatt').value,
+    scadenza: document.getElementById('hp-scad').value,
+    operatore: document.getElementById('hp-op').value
+  });
+  if (res.ok) { showMsg('Scheda salvata!','ok'); caricaPrep(); document.getElementById('hp-prep').value=''; }
+  else showMsg(res.msg,'err');
+}
+</script>
+</body>
+</html>

@@ -36,21 +36,43 @@ body{font-family:var(--sans);background:var(--bg);color:var(--testo);min-height:
 .field input,.field select{width:100%;padding:11px 13px;background:var(--card2);border:1px solid var(--border);border-radius:10px;color:var(--testo);font-family:var(--mono);font-size:14px;outline:none;transition:border .2s;-webkit-appearance:none}
 .field input:focus,.field select:focus{border-color:var(--verde)}
 .note{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px}
-.ih{display:grid;grid-template-columns:1fr 68px 88px 32px;gap:5px;margin-bottom:4px}
+
+/* GRIGLIA INGREDIENTI — 5 colonne: nome | qtà | €/kg | costo€ | elimina */
+.ih{display:grid;grid-template-columns:1fr 58px 72px 62px 28px;gap:4px;margin-bottom:4px}
 .ih span{font-size:10px;color:var(--muted);font-family:var(--mono)}
 .iw{position:relative;margin-bottom:7px}
-.ir{display:grid;grid-template-columns:1fr 68px 88px 32px;gap:5px;align-items:center}
-.ir input{width:100%;padding:9px 10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--testo);font-family:var(--mono);font-size:12px;outline:none;transition:border .2s;-webkit-appearance:none}
+.ir{display:grid;grid-template-columns:1fr 58px 72px 62px 28px;gap:4px;align-items:center}
+.ir input{width:100%;padding:9px 8px;background:var(--card2);border:1px solid var(--border);border-radius:8px;color:var(--testo);font-family:var(--mono);font-size:12px;outline:none;transition:border .2s;-webkit-appearance:none}
 .ir input:focus{border-color:var(--verde)}
-.ir .ip{border-color:rgba(0,230,118,.35);color:var(--verde)}
-.ir .ip.man{border-color:rgba(255,215,64,.35);color:var(--giallo)}
-.dd{position:absolute;top:calc(100% + 2px);left:0;width:calc(100% - 125px);background:#222;border:1px solid var(--verde);border-radius:8px;z-index:200;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none}
+
+/* €/kg — readonly: visibile ma non modificabile */
+.ir .ip{
+  border-color:rgba(0,230,118,.25);
+  color:var(--verde);
+  background:rgba(0,230,118,.04);
+  cursor:default;
+  opacity:.85;
+}
+.ir .ip:focus{border-color:rgba(0,230,118,.25);}
+
+/* Costo riga — calcolato, non editabile */
+.ir .icosto{
+  border-color:rgba(201,168,76,.3);
+  color:var(--oro);
+  background:rgba(201,168,76,.06);
+  cursor:default;
+  font-weight:700;
+  text-align:right;
+}
+.ir .icosto:focus{border-color:rgba(201,168,76,.3);}
+
+.dd{position:absolute;top:calc(100% + 2px);left:0;width:calc(100% - 195px);background:#222;border:1px solid var(--verde);border-radius:8px;z-index:200;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.5);display:none}
 .di{padding:8px 11px;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--testo);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
 .di:last-child{border-bottom:none}
 .di:hover{background:rgba(0,230,118,.1)}
 .di .dp{color:var(--verde);font-weight:700;margin-left:6px;white-space:nowrap}
 .di .df{color:var(--muted);font-size:10px;white-space:nowrap;margin-left:4px}
-.bdel{width:32px;height:34px;background:rgba(255,82,82,.12);border:1px solid rgba(255,82,82,.2);border-radius:8px;color:var(--rosso);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.bdel{width:28px;height:34px;background:rgba(255,82,82,.12);border:1px solid rgba(255,82,82,.2);border-radius:8px;color:var(--rosso);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .btn{padding:12px 18px;border-radius:10px;font-family:var(--sans);font-size:13px;font-weight:700;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:7px;transition:all .2s;letter-spacing:.02em}
 .bv{background:var(--verde);color:#000}.bv:hover{background:var(--verde-d)}
 .bo{background:transparent;color:var(--verde);border:1px solid rgba(0,230,118,.3)}
@@ -132,7 +154,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--testo);min-height:
     </div>
     <div class="card">
       <div class="ct">Ingredienti <span style="color:var(--verde);font-size:10px;margin-left:4px" id="lc"></span></div>
-      <div class="ih"><span>Ingrediente</span><span>Qtà (g)</span><span>€/kg</span><span></span></div>
+      <div class="ih"><span>Ingrediente</span><span>Qtà (g)</span><span>€/kg</span><span>Costo €</span><span></span></div>
       <div id="fil"></div>
       <button class="btn bo bs" style="margin-top:4px" onclick="addIF()">+ Ingrediente</button>
     </div>
@@ -167,7 +189,7 @@ body{font-family:var(--sans);background:var(--bg);color:var(--testo);min-height:
     </div>
     <div class="card">
       <div class="ct">Ricetta</div>
-      <div class="ih"><span>Ingrediente</span><span>Dose cl</span><span>€/lt</span><span></span></div>
+      <div class="ih"><span>Ingrediente</span><span>Dose cl</span><span>€/lt</span><span>Costo €</span><span></span></div>
       <div id="dil"></div>
       <button class="btn bo bs" style="margin-top:4px" onclick="addID()">+ Ingrediente</button>
     </div>
@@ -242,149 +264,168 @@ function cerca(q){
   return listino.filter(x=>x.articolo.toLowerCase().includes(q.toLowerCase())).slice(0,6);
 }
 
-function addIng(cid,tipo){
-  const w=document.createElement('div');
-  w.className='iw';
-  const ph=tipo==='food'?'g':'cl';
-  w.innerHTML=`<div class="ir">
-    <input type="text" placeholder="Ingrediente" class="in" autocomplete="off">
-    <input type="number" placeholder="${ph}" step="1" min="0" class="iq">
-    <input type="number" placeholder="${tipo==='food'?'€/kg':'€/lt'}" step="0.01" min="0" class="ip">
+/* Aggiorna il campo costo della riga in tempo reale */
+function aggiornaCosto(row, tipo){
+  const q  = parseFloat(row.querySelector('.iq').value) || 0;
+  const p  = parseFloat(row.querySelector('.ip').value) || 0;
+  const ic = row.querySelector('.icosto');
+  let costo = 0;
+  if(tipo === 'food'){
+    costo = (q / 1000) * p;          // grammi → kg
+  } else {
+    costo = (q / 100) * p;           // cl → litri
+  }
+  ic.value = (q && p) ? '€ ' + costo.toFixed(3) : '';
+}
+
+function addIng(cid, tipo){
+  const w = document.createElement('div');
+  w.className = 'iw';
+  const ph  = tipo === 'food' ? 'g' : 'cl';
+  const lbl = tipo === 'food' ? '€/kg' : '€/lt';
+  w.innerHTML = `<div class="ir">
+    <input type="text"   placeholder="Ingrediente" class="in" autocomplete="off">
+    <input type="number" placeholder="${ph}"  step="1"    min="0" class="iq">
+    <input type="number" placeholder="${lbl}" step="0.01" min="0" class="ip" readonly tabindex="-1">
+    <input type="text"   placeholder="—"                          class="icosto" readonly tabindex="-1">
     <button class="bdel" onclick="this.closest('.iw').remove()">✕</button>
   </div><div class="dd"></div>`;
 
-  const ni=w.querySelector('.in');
-  const pi=w.querySelector('.ip');
-  const dd=w.querySelector('.dd');
+  const ni = w.querySelector('.in');
+  const qi = w.querySelector('.iq');
+  const pi = w.querySelector('.ip');
+  const dd = w.querySelector('.dd');
 
-  ni.addEventListener('input',()=>{
-    const res=cerca(ni.value);
-    if(!res.length){dd.style.display='none';return;}
-    dd.innerHTML=res.map(r=>{
-      let pDisplay,pVal;
-      if(tipo==='drink'){
-        // Per beverage: il listino è €/unità (bottiglia), convertiamo in €/lt
-        // Assumiamo bottiglia standard 0.7lt per spirits, 1lt per altri
-        pVal=r.prezzoAttuale;
-        pDisplay='€'+pVal.toFixed(2)+'/u';
+  /* Autocomplete dal listino */
+  ni.addEventListener('input', () => {
+    const res = cerca(ni.value);
+    if(!res.length){ dd.style.display='none'; return; }
+    dd.innerHTML = res.map(r => {
+      let pDisplay, pVal;
+      if(tipo === 'drink'){
+        pVal     = r.prezzoAttuale;
+        pDisplay = '€' + pVal.toFixed(2) + '/u';
       } else {
-        pVal=r.prezzoAttuale;
-        pDisplay='€'+pVal.toFixed(2)+'/kg';
+        pVal     = r.prezzoAttuale;
+        pDisplay = '€' + pVal.toFixed(2) + '/kg';
       }
       return `<div class="di" data-p="${pVal}" data-n="${r.articolo}">
         <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.articolo}</span>
         <span class="dp">${pDisplay}</span>
       </div>`;
     }).join('');
-    dd.style.display='block';
-    dd.querySelectorAll('.di').forEach(item=>{
-      item.addEventListener('click',()=>{
-        ni.value=item.dataset.n;
-        pi.value=parseFloat(item.dataset.p).toFixed(2);
-        pi.className='ip';
-        dd.style.display='none';
+    dd.style.display = 'block';
+    dd.querySelectorAll('.di').forEach(item => {
+      item.addEventListener('click', () => {
+        ni.value = item.dataset.n;
+        pi.value = parseFloat(item.dataset.p).toFixed(2);
+        dd.style.display = 'none';
+        aggiornaCosto(w, tipo);
       });
     });
   });
-  ni.addEventListener('blur',()=>setTimeout(()=>dd.style.display='none',200));
-  pi.addEventListener('input',()=>pi.classList.add('man'));
+
+  ni.addEventListener('blur', () => setTimeout(() => dd.style.display='none', 200));
+
+  /* Ricalcola costo live ad ogni modifica quantità */
+  qi.addEventListener('input', () => aggiornaCosto(w, tipo));
 
   document.getElementById(cid).appendChild(w);
   ni.focus();
 }
 
-function addIF(){addIng('fil','food');}
-function addID(){addIng('dil','drink');}
+function addIF(){ addIng('fil','food'); }
+function addID(){ addIng('dil','drink'); }
 
-function sem(perc,tipo){
-  const v=tipo==='food'?FV:DV, g=tipo==='food'?FG:DG;
-  if(perc<=v)return{cls:'sv',txt:'🟢 OTTIMO',gc:'#00e676',hb:'rgba(0,230,118,0.05)',vc:'gv'};
-  if(perc<=g)return{cls:'sg',txt:'🟡 BORDERLINE',gc:'#ffd740',hb:'rgba(255,215,64,0.05)',vc:'gy'};
-  return{cls:'sr',txt:'🔴 RIVEDI PREZZO',gc:'#ff5252',hb:'rgba(255,82,82,0.05)',vc:'gr'};
+function sem(perc, tipo){
+  const v = tipo==='food'?FV:DV, g = tipo==='food'?FG:DG;
+  if(perc<=v) return{cls:'sv',txt:'🟢 OTTIMO',      gc:'#00e676',hb:'rgba(0,230,118,0.05)', vc:'gv'};
+  if(perc<=g) return{cls:'sg',txt:'🟡 BORDERLINE',  gc:'#ffd740',hb:'rgba(255,215,64,0.05)',vc:'gy'};
+  return      {cls:'sr',txt:'🔴 RIVEDI PREZZO',     gc:'#ff5252',hb:'rgba(255,82,82,0.05)', vc:'gr'};
 }
 
 function calcF(){
-  const nome=document.getElementById('fn').value.trim();
-  const pL=parseFloat(document.getElementById('fp').value)||0;
-  const sfrido=parseFloat(document.getElementById('fs').value)||10;
-  if(!nome){notify('⚠️ Nome piatto mancante',1);return;}
-  if(!pL){notify('⚠️ Prezzo vendita mancante',1);return;}
-  const ws=document.querySelectorAll('#fil .iw');
-  if(!ws.length){notify('⚠️ Aggiungi almeno un ingrediente',1);return;}
-  let ci=0,ok=0;
-  ws.forEach(w=>{
-    const q=parseFloat(w.querySelector('.iq').value)||0;
-    const p=parseFloat(w.querySelector('.ip').value)||0;
-    if(q&&p){ci+=(q/1000)*p;ok++;}
+  const nome  = document.getElementById('fn').value.trim();
+  const pL    = parseFloat(document.getElementById('fp').value) || 0;
+  const sfrido= parseFloat(document.getElementById('fs').value) || 10;
+  if(!nome) { notify('⚠️ Nome piatto mancante',1); return; }
+  if(!pL)   { notify('⚠️ Prezzo vendita mancante',1); return; }
+  const ws = document.querySelectorAll('#fil .iw');
+  if(!ws.length){ notify('⚠️ Aggiungi almeno un ingrediente',1); return; }
+  let ci=0, ok=0;
+  ws.forEach(w => {
+    const q = parseFloat(w.querySelector('.iq').value) || 0;
+    const p = parseFloat(w.querySelector('.ip').value) || 0;
+    if(q && p){ ci += (q/1000)*p; ok++; }
   });
-  if(!ok){notify('⚠️ Inserisci quantità e prezzi',1);return;}
+  if(!ok){ notify('⚠️ Inserisci quantità e prezzi',1); return; }
   const cs=ci*(sfrido/100), ov=OH[st], ct=ci+cs+ov;
   const pN=pL/1.10, fcP=(ct/pN)*100, mE=pN-ct, mP=(mE/pN)*100;
-  const s=sem(fcP,'food');
+  const s = sem(fcP,'food');
   document.getElementById('fr').classList.add('show');
-  document.getElementById('frh').style.background=s.hb;
-  set('frn',nome); 
-  const sem_el=document.getElementById('fsem');sem_el.className='sem '+s.cls;sem_el.textContent=s.txt;
-  set('fci','€'+ci.toFixed(2));set('fcs','€'+cs.toFixed(2)+' (+'+sfrido+'%)');
-  set('fco','€'+ov.toFixed(2)+' ('+st+')');set('fct','€'+ct.toFixed(2));
+  document.getElementById('frh').style.background = s.hb;
+  set('frn', nome);
+  const sem_el = document.getElementById('fsem'); sem_el.className='sem '+s.cls; sem_el.textContent=s.txt;
+  set('fci','€'+ci.toFixed(2)); set('fcs','€'+cs.toFixed(2)+' (+'+sfrido+'%)');
+  set('fco','€'+ov.toFixed(2)+' ('+st+')'); set('fct','€'+ct.toFixed(2));
   set('fpn','€'+pN.toFixed(2));
-  const ffc=document.getElementById('ffc');ffc.textContent=fcP.toFixed(1)+'%';ffc.className='rv '+s.vc;
-  set('fme','€'+mE.toFixed(2));set('fmp',mP.toFixed(1)+'%');
-  const g=document.getElementById('fg');g.style.width=Math.min(fcP,100)+'%';g.style.background=s.gc;
+  const ffc = document.getElementById('ffc'); ffc.textContent=fcP.toFixed(1)+'%'; ffc.className='rv '+s.vc;
+  set('fme','€'+mE.toFixed(2)); set('fmp',mP.toFixed(1)+'%');
+  const g = document.getElementById('fg'); g.style.width=Math.min(fcP,100)+'%'; g.style.background=s.gc;
   setTimeout(()=>document.getElementById('fr').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
   window._lF={tipo:'food',nome,prezzoLordo:pL,prezzoNetto:pN,costoTot:ct,costoIng:ci,fcPerc:fcP,margineEuro:mE,marginePerc:mP,st,semTxt:s.txt};
 }
 
 function calcD(){
-  const nome=document.getElementById('dn').value.trim();
-  const pL=parseFloat(document.getElementById('dp').value)||0;
-  if(!nome){notify('⚠️ Nome cocktail mancante',1);return;}
-  if(!pL){notify('⚠️ Prezzo vendita mancante',1);return;}
-  const ws=document.querySelectorAll('#dil .iw');
-  if(!ws.length){notify('⚠️ Aggiungi almeno un ingrediente',1);return;}
-  let ci=0,ok=0;
-  ws.forEach(w=>{
-    const cl=parseFloat(w.querySelector('.iq').value)||0;
-    const p=parseFloat(w.querySelector('.ip').value)||0;
-    if(cl&&p){ci+=(cl/100)*p;ok++;}
+  const nome = document.getElementById('dn').value.trim();
+  const pL   = parseFloat(document.getElementById('dp').value) || 0;
+  if(!nome){ notify('⚠️ Nome cocktail mancante',1); return; }
+  if(!pL)  { notify('⚠️ Prezzo vendita mancante',1); return; }
+  const ws = document.querySelectorAll('#dil .iw');
+  if(!ws.length){ notify('⚠️ Aggiungi almeno un ingrediente',1); return; }
+  let ci=0, ok=0;
+  ws.forEach(w => {
+    const cl = parseFloat(w.querySelector('.iq').value) || 0;
+    const p  = parseFloat(w.querySelector('.ip').value) || 0;
+    if(cl && p){ ci += (cl/100)*p; ok++; }
   });
-  if(!ok){notify('⚠️ Inserisci dosi e prezzi',1);return;}
-  const pN=pL/1.22,dcP=(ci/pN)*100,mE=pN-ci,mP=(mE/pN)*100;
-  const s=sem(dcP,'drink');
+  if(!ok){ notify('⚠️ Inserisci dosi e prezzi',1); return; }
+  const pN=pL/1.22, dcP=(ci/pN)*100, mE=pN-ci, mP=(mE/pN)*100;
+  const s = sem(dcP,'drink');
   document.getElementById('dr').classList.add('show');
-  document.getElementById('drh').style.background=s.hb;
-  set('drn',nome);
-  const sem_el=document.getElementById('dsem');sem_el.className='sem '+s.cls;sem_el.textContent=s.txt;
-  set('dci','€'+ci.toFixed(2));set('dpn','€'+pN.toFixed(2));
-  const ddc=document.getElementById('ddc');ddc.textContent=dcP.toFixed(1)+'%';ddc.className='rv '+s.vc;
-  set('dme','€'+mE.toFixed(2));set('dmp',mP.toFixed(1)+'%');
-  const g=document.getElementById('dg');g.style.width=Math.min(dcP,100)+'%';g.style.background=s.gc;
+  document.getElementById('drh').style.background = s.hb;
+  set('drn', nome);
+  const sem_el = document.getElementById('dsem'); sem_el.className='sem '+s.cls; sem_el.textContent=s.txt;
+  set('dci','€'+ci.toFixed(2)); set('dpn','€'+pN.toFixed(2));
+  const ddc = document.getElementById('ddc'); ddc.textContent=dcP.toFixed(1)+'%'; ddc.className='rv '+s.vc;
+  set('dme','€'+mE.toFixed(2)); set('dmp',mP.toFixed(1)+'%');
+  const g = document.getElementById('dg'); g.style.width=Math.min(dcP,100)+'%'; g.style.background=s.gc;
   setTimeout(()=>document.getElementById('dr').scrollIntoView({behavior:'smooth',block:'nearest'}),100);
   window._lD={tipo:'drink',nome,prezzoLordo:pL,prezzoNetto:pN,costoIng:ci,dcPerc:dcP,margineEuro:mE,marginePerc:mP,semTxt:s.txt};
 }
 
 function salva(tipo){
-  const item=tipo==='food'?window._lF:window._lD;
-  if(!item)return;
-  const idx=saved.findIndex(x=>x.nome===item.nome&&x.tipo===item.tipo);
-  if(idx>=0)saved[idx]={...item,ts:Date.now()};
+  const item = tipo==='food' ? window._lF : window._lD;
+  if(!item) return;
+  const idx = saved.findIndex(x=>x.nome===item.nome && x.tipo===item.tipo);
+  if(idx>=0) saved[idx]={...item,ts:Date.now()};
   else saved.unshift({...item,ts:Date.now()});
   localStorage.setItem('cc',JSON.stringify(saved));
   notify('✅ '+item.nome+' salvato!');
 }
 
 function renderS(){
-  const w=document.getElementById('slw');
-  if(!saved.length){w.innerHTML='<div class="empty">📭<br>Nessun piatto salvato ancora</div>';return;}
-  const foods=saved.filter(x=>x.tipo==='food');
-  const drinks=saved.filter(x=>x.tipo==='drink');
+  const w = document.getElementById('slw');
+  if(!saved.length){ w.innerHTML='<div class="empty">📭<br>Nessun piatto salvato ancora</div>'; return; }
+  const foods  = saved.filter(x=>x.tipo==='food');
+  const drinks = saved.filter(x=>x.tipo==='drink');
   let h='';
   const rg=(items,emoji,label)=>{
-    if(!items.length)return'';
+    if(!items.length) return '';
     let r=`<div style="font-size:10px;color:var(--muted2);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:4px">${emoji} ${label}</div>`;
     items.forEach(item=>{
       const perc=item.tipo==='food'?item.fcPerc:item.dcPerc;
-      const s1=item.tipo==='food'?FV:DV,s2=item.tipo==='food'?FG:DG;
+      const s1=item.tipo==='food'?FV:DV, s2=item.tipo==='food'?FG:DG;
       const c=perc<=s1?'var(--verde)':perc<=s2?'var(--giallo)':'var(--rosso)';
       const gi=saved.indexOf(item);
       r+=`<div class="si">
@@ -404,18 +445,16 @@ function renderS(){
   w.innerHTML=h;
 }
 
-function delS(i){saved.splice(i,1);localStorage.setItem('cc',JSON.stringify(saved));renderS();}
+function delS(i){ saved.splice(i,1); localStorage.setItem('cc',JSON.stringify(saved)); renderS(); }
 
 function notify(msg,err=0){
   const el=document.getElementById('not');
-  el.textContent=msg;el.style.background=err?'var(--rosso)':'var(--verde)';
-  el.style.color=err?'#fff':'#000';el.style.display='block';
+  el.textContent=msg; el.style.background=err?'var(--rosso)':'var(--verde)';
+  el.style.color=err?'#fff':'#000'; el.style.display='block';
   setTimeout(()=>el.style.display='none',2500);
 }
 
-document.addEventListener('DOMContentLoaded',()=>{
-  caricaL();addIF();addID();
-});
+document.addEventListener('DOMContentLoaded',()=>{ caricaL(); addIF(); addID(); });
 </script>
 </body>
 </html>

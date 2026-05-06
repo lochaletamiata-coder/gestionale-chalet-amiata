@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Cost Lab · Lo Chalet Amiata</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --card: #161616;
+  --card2: #1e1e1e;
+  --border: rgba(255,255,255,0.07);
+  --verde: #00e676;
+  --verde-d: #00c853;
+  --giallo: #ffd740;
+  --rosso: #ff5252;
+  --oro: #c9a84c;
+  --testo: #f0f0f0;
+  --muted: #666;
+  --muted2: #999;
+  --accent: #00e676;
+  --radius: 16px;
+  --font-mono: 'Space Mono', monospace;
+  --font-sans: 'Syne', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--testo);
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+
+/* HEADER */
+.header {
+  padding: 1.25rem 1rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: rgba(13,13,13,0.95);
+  backdrop-filter: blur(12px);
+  z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 10px; }
+.logo-text { font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em; }
+.logo-sub { font-size: 10px; color: var(--muted2); font-family: var(--font-mono); letter-spacing: .08em; margin-top: 1px; }
+.badge-lab {
+  background: var(--verde);
+  color: #000;
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: .08em;
+}
+
+/* STAGIONE SELECTOR */
+.stagione-wrap {
+  padding: 1rem;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+}
+.stagione-label { font-size: 10px; color: var(--muted2); font-family: var(--font-mono); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.stagione-btns { display: flex; gap: 6px; }
+.s-btn {
+  flex: 1; padding: 10px 6px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--card2); color: var(--muted2); font-family: var(--font-sans);
+  font-size: 12px; font-weight: 600; cursor: pointer; text-align: center;
+  transition: all .2s;
+}
+.s-btn.active { background: var(--verde); color: #000; border-color: var(--verde); }
+.s-btn .s-coperti { font-family: var(--font-mono); font-size: 11px; display: block; margin-top: 2px; opacity: .7; }
+.overhead-info {
+  margin-top: 8px; font-family: var(--font-mono); font-size: 11px; color: var(--muted2);
+}
+.overhead-val { color: var(--verde); font-weight: 700; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  position: sticky;
+  top: 68px;
+  z-index: 99;
+}
+.tab-btn {
+  flex: 1; padding: 14px 8px; text-align: center; font-family: var(--font-sans);
+  font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer;
+  border: none; background: none; border-bottom: 2px solid transparent;
+  transition: all .2s; letter-spacing: .02em;
+}
+.tab-btn.active { color: var(--verde); border-bottom-color: var(--verde); }
+
+/* CONTENT */
+.content { padding: 1rem; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* CARDS */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem;
+  margin-bottom: 1rem;
+}
+.card-title {
+  font-size: 11px; font-family: var(--font-mono); color: var(--muted2);
+  text-transform: uppercase; letter-spacing: .1em; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title::before {
+  content: ''; display: block; width: 3px; height: 12px;
+  background: var(--verde); border-radius: 2px;
+}
+
+/* INPUTS */
+.field { margin-bottom: 10px; }
+.field label { font-size: 11px; color: var(--muted2); font-family: var(--font-mono); display: block; margin-bottom: 4px; letter-spacing: .06em; }
+.field input, .field select {
+  width: 100%; padding: 11px 13px;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--testo); font-family: var(--font-mono);
+  font-size: 14px; outline: none; transition: border .2s;
+  -webkit-appearance: none;
+}
+.field input:focus, .field select:focus { border-color: var(--verde); }
+.field input::placeholder { color: var(--muted); }
+
+/* INGREDIENTI */
+.ing-row {
+  display: grid; grid-template-columns: 1fr 80px 80px 32px;
+  gap: 6px; margin-bottom: 6px; align-items: center;
+}
+.ing-row input, .ing-row select {
+  width: 100%; padding: 9px 10px;
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--testo); font-family: var(--font-mono);
+  font-size: 12px; outline: none; transition: border .2s;
+  -webkit-appearance: none;
+}
+.ing-row input:focus, .ing-row select:focus { border-color: var(--verde); }
+.btn-del {
+  width: 32px; height: 32px; background: rgba(255,82,82,.12);
+  border: 1px solid rgba(255,82,82,.2); border-radius: 8px;
+  color: var(--rosso); font-size: 14px; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+}
+.ing-headers {
+  display: grid; grid-template-columns: 1fr 80px 80px 32px;
+  gap: 6px; margin-bottom: 4px;
+}
+.ing-headers span { font-size: 10px; color: var(--muted); font-family: var(--font-mono); letter-spacing: .06em; }
+
+/* BUTTONS */
+.btn {
+  padding: 12px 18px; border-radius: 10px; font-family: var(--font-sans);
+  font-size: 13px; font-weight: 700; cursor: pointer; border: none;
+  display: inline-flex; align-items: center; gap: 7px; transition: all .2s;
+  letter-spacing: .02em;
+}
+.btn-verde { background: var(--verde); color: #000; }
+.btn-verde:hover { background: var(--verde-d); }
+.btn-outline { background: transparent; color: var(--verde); border: 1px solid rgba(0,230,118,.3); }
+.btn-outline:hover { background: rgba(0,230,118,.08); }
+.btn-sm { padding: 8px 14px; font-size: 12px; }
+.btn-full { width: 100%; justify-content: center; margin-top: 10px; }
+.btn-oro { background: var(--oro); color: #000; }
+
+/* RISULTATO */
+.risultato {
+  border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); margin-top: 1rem;
+  display: none;
+}
+.risultato.show { display: block; }
+.ris-header {
+  padding: 1rem 1.1rem;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.ris-nome { font-size: 1rem; font-weight: 700; }
+.semaforo {
+  font-size: 11px; font-family: var(--font-mono); font-weight: 700;
+  padding: 5px 12px; border-radius: 20px; letter-spacing: .06em;
+}
+.sem-verde { background: rgba(0,230,118,.15); color: var(--verde); border: 1px solid rgba(0,230,118,.3); }
+.sem-giallo { background: rgba(255,215,64,.15); color: var(--giallo); border: 1px solid rgba(255,215,64,.3); }
+.sem-rosso { background: rgba(255,82,82,.15); color: var(--rosso); border: 1px solid rgba(255,82,82,.3); }
+
+.ris-body { padding: 0 1.1rem 1.1rem; }
+.ris-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.ris-row:last-child { border-bottom: none; }
+.ris-label { color: var(--muted2); font-family: var(--font-mono); font-size: 11px; }
+.ris-val { font-family: var(--font-mono); font-weight: 700; }
+.ris-val.verde { color: var(--verde); }
+.ris-val.giallo { color: var(--giallo); }
+.ris-val.rosso { color: var(--rosso); }
+.ris-val.oro { color: var(--oro); }
+
+/* GAUGE */
+.gauge-wrap { padding: 1rem 0 .5rem; }
+.gauge-track {
+  height: 8px; border-radius: 4px; background: var(--card2);
+  overflow: hidden; margin-bottom: 6px; position: relative;
+}
+.gauge-fill {
+  height: 100%; border-radius: 4px;
+  transition: width .5s cubic-bezier(.34,1.56,.64,1);
+}
+.gauge-labels {
+  display: flex; justify-content: space-between;
+  font-size: 9px; font-family: var(--font-mono); color: var(--muted);
+}
+
+/* LISTA SALVATI */
+.saved-list { }
+.saved-item {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 10px;
+}
+.saved-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.saved-info { flex: 1; }
+.saved-nome { font-size: 13px; font-weight: 600; }
+.saved-dettaglio { font-size: 11px; color: var(--muted2); font-family: var(--font-mono); margin-top: 2px; }
+.saved-margine { font-family: var(--font-mono); font-size: 13px; font-weight: 700; }
+.saved-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 4px; }
+
+/* EMPTY STATE */
+.empty { text-align: center; padding: 2rem 1rem; color: var(--muted); }
+.empty-icon { font-size: 2rem; margin-bottom: .5rem; }
+.empty-txt { font-size: 13px; }
+
+/* NOTIFICA */
+.notifica {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: var(--verde); color: #000; padding: 10px 20px;
+  border-radius: 20px; font-size: 13px; font-weight: 700;
+  font-family: var(--font-mono); z-index: 999;
+  animation: slideUp .3s ease; display: none;
+}
+@keyframes slideUp { from { opacity:0; transform: translateX(-50%) translateY(10px); } to { opacity:1; transform: translateX(-50%) translateY(0); } }
+
+/* LISTINO ALERT */
+.listino-tag {
+  font-size: 10px; font-family: var(--font-mono);
+  background: rgba(201,168,76,.15); color: var(--oro);
+  border: 1px solid rgba(201,168,76,.2); padding: 2px 7px;
+  border-radius: 4px; margin-left: 6px;
+}
+
+/* IVA NOTE */
+.iva-note {
+  font-size: 10px; color: var(--muted); font-family: var(--font-mono);
+  margin-top: 4px; display: flex; align-items: center; gap: 4px;
+}
+
+@media (min-width: 600px) {
+  .content { max-width: 600px; margin: 0 auto; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div>
+      <div class="logo-text">🦌 Cost Lab</div>
+      <div class="logo-sub">Lo Chalet · Amiata</div>
+    </div>
+  </div>
+  <span class="badge-lab">PRO</span>
+</div>
+
+<!-- STAGIONE -->
+<div class="stagione-wrap">
+  <div class="stagione-label">Stagione attiva</div>
+  <div class="stagione-btns">
+    <button class="s-btn" onclick="setStagione('bassa',this)">
+      Bassa<span class="s-coperti">~30 cop.</span>
+    </button>
+    <button class="s-btn active" onclick="setStagione('media',this)">
+      Media<span class="s-coperti">~60 cop.</span>
+    </button>
+    <button class="s-btn" onclick="setStagione('alta',this)">
+      Alta<span class="s-coperti">~120 cop.</span>
+    </button>
+  </div>
+  <div class="overhead-info">
+    Overhead cucina (energia+cuoco): <span class="overhead-val" id="overhead-display">€2,22/piatto</span>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('food',this)">🍝 Food Cost</button>
+  <button class="tab-btn" onclick="showTab('drink',this)">🍹 Drink Cost</button>
+  <button class="tab-btn" onclick="showTab('salvati',this)">📋 Salvati</button>
+</div>
+
+<div class="content">
+
+  <!-- ============ FOOD COST ============ -->
+  <div id="sec-food" class="section active">
+
+    <div class="card">
+      <div class="card-title">Dati piatto</div>
+      <div class="field">
+        <label>Nome piatto</label>
+        <input type="text" id="f-nome" placeholder="es. Pici al Ragù di Cinghiale">
+      </div>
+      <div class="field">
+        <label>Prezzo vendita (IVA 10% inclusa) €</label>
+        <input type="number" id="f-prezzo" step="0.5" placeholder="es. 14.00">
+        <div class="iva-note">ℹ️ Inserisci il prezzo che vede il cliente — l'IVA viene scorporata automaticamente</div>
+      </div>
+      <div class="field">
+        <label>Sfrido / sprechi %</label>
+        <input type="number" id="f-sfrido" value="10" step="1" placeholder="10">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ingredienti</div>
+      <div class="ing-headers">
+        <span>Ingrediente</span>
+        <span>Qtà (g/ml)</span>
+        <span>€/kg</span>
+        <span></span>
+      </div>
+      <div id="f-ing-list"></div>
+      <button class="btn btn-outline btn-sm" onclick="addIng('f-ing-list')">+ Ingrediente</button>
+    </div>
+
+    <button class="btn btn-verde btn-full" onclick="calcolaFood()">
+      ⚡ Calcola Food Cost
+    </button>
+
+    <!-- RISULTATO FOOD -->
+    <div class="risultato" id="f-risultato">
+      <div class="ris-header" id="f-ris-header">
+        <span class="ris-nome" id="f-ris-nome">—</span>
+        <span class="semaforo" id="f-semaforo">—</span>
+      </div>
+      <div class="ris-body">
+        <div class="gauge-wrap">
+          <div class="gauge-track">
+            <div class="gauge-fill" id="f-gauge" style="width:0%"></div>
+          </div>
+          <div class="gauge-labels">
+            <span>0%</span><span>FOOD COST %</span><span>100%</span>
+          </div>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Costo ingredienti</span>
+          <span class="ris-val" id="f-costo-ing">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Sfrido incluso</span>
+          <span class="ris-val" id="f-costo-sfrido">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Overhead cucina</span>
+          <span class="ris-val" id="f-costo-overhead">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Costo totale reale</span>
+          <span class="ris-val oro" id="f-costo-tot">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Prezzo netto (IVA scorporata)</span>
+          <span class="ris-val" id="f-prezzo-netto">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Food Cost %</span>
+          <span class="ris-val" id="f-fc-perc">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Margine €</span>
+          <span class="ris-val verde" id="f-margine-euro">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Margine %</span>
+          <span class="ris-val verde" id="f-margine-perc">—</span>
+        </div>
+        <button class="btn btn-oro btn-full" onclick="salvaRisultato('food')" style="margin-top:12px">
+          💾 Salva piatto
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ DRINK COST ============ -->
+  <div id="sec-drink" class="section">
+
+    <div class="card">
+      <div class="card-title">Dati cocktail</div>
+      <div class="field">
+        <label>Nome cocktail</label>
+        <input type="text" id="d-nome" placeholder="es. Gin Amiata Tonic">
+      </div>
+      <div class="field">
+        <label>Prezzo vendita (IVA 22% inclusa) €</label>
+        <input type="number" id="d-prezzo" step="0.5" placeholder="es. 10.00">
+        <div class="iva-note">ℹ️ Prezzo al cliente — IVA 22% scorporata automaticamente</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Ricetta</div>
+      <div class="ing-headers">
+        <span>Ingrediente</span>
+        <span>Dose (cl)</span>
+        <span>€/lt</span>
+        <span></span>
+      </div>
+      <div id="d-ing-list"></div>
+      <button class="btn btn-outline btn-sm" onclick="addIng('d-ing-list')">+ Ingrediente</button>
+    </div>
+
+    <button class="btn btn-verde btn-full" onclick="calcolaDrink()">
+      ⚡ Calcola Drink Cost
+    </button>
+
+    <!-- RISULTATO DRINK -->
+    <div class="risultato" id="d-risultato">
+      <div class="ris-header" id="d-ris-header">
+        <span class="ris-nome" id="d-ris-nome">—</span>
+        <span class="semaforo" id="d-semaforo">—</span>
+      </div>
+      <div class="ris-body">
+        <div class="gauge-wrap">
+          <div class="gauge-track">
+            <div class="gauge-fill" id="d-gauge" style="width:0%"></div>
+          </div>
+          <div class="gauge-labels">
+            <span>0%</span><span>DRINK COST %</span><span>100%</span>
+          </div>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Costo ingredienti</span>
+          <span class="ris-val" id="d-costo-ing">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Prezzo netto (IVA scorporata)</span>
+          <span class="ris-val" id="d-prezzo-netto">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Drink Cost %</span>
+          <span class="ris-val" id="d-dc-perc">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Margine €</span>
+          <span class="ris-val verde" id="d-margine-euro">—</span>
+        </div>
+        <div class="ris-row">
+          <span class="ris-label">Margine %</span>
+          <span class="ris-val verde" id="d-margine-perc">—</span>
+        </div>
+        <button class="btn btn-oro btn-full" onclick="salvaRisultato('drink')" style="margin-top:12px">
+          💾 Salva cocktail
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============ SALVATI ============ -->
+  <div id="sec-salvati" class="section">
+    <div class="card">
+      <div class="card-title">Piatti & Cocktail salvati</div>
+      <div id="saved-list-wrap"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="notifica" id="notifica"></div>
+
+<script>
+// ===================== STATO =====================
+let stagione = 'media';
+const OVERHEAD = { bassa: 4.44, media: 2.22, alta: 1.11 };
+let savedItems = JSON.parse(localStorage.getItem('chalet_costs') || '[]');
+
+// PARAMETRI SEMAFORO
+const FOOD_VERDE = 32;   // food cost % sotto = verde
+const FOOD_GIALLO = 42;  // food cost % sotto = giallo, sopra = rosso
+const DRINK_VERDE = 18;
+const DRINK_GIALLO = 28;
+
+// ===================== STAGIONE =====================
+function setStagione(s, btn) {
+  stagione = s;
+  document.querySelectorAll('.s-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('overhead-display').textContent = '€' + OVERHEAD[s].toFixed(2) + '/piatto';
+}
+
+// ===================== TABS =====================
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'salvati') renderSalvati();
+}
+
+// ===================== INGREDIENTI =====================
+function addIng(containerId) {
+  const div = document.createElement('div');
+  div.className = 'ing-row';
+  div.innerHTML = `
+    <input type="text" placeholder="es. Pici freschi" autocomplete="off">
+    <input type="number" placeholder="200" step="1" min="0">
+    <input type="number" placeholder="6.00" step="0.01" min="0">
+    <button class="btn-del" onclick="this.parentElement.remove()">✕</button>
+  `;
+  document.getElementById(containerId).appendChild(div);
+  div.querySelector('input').focus();
+}
+
+// ===================== CALCOLA FOOD =====================
+function calcolaFood() {
+  const nome = document.getElementById('f-nome').value.trim();
+  const prezzoLordo = parseFloat(document.getElementById('f-prezzo').value) || 0;
+  const sfrido = parseFloat(document.getElementById('f-sfrido').value) || 10;
+
+  if (!nome) { showNotifica('⚠️ Inserisci il nome del piatto', true); return; }
+  if (!prezzoLordo) { showNotifica('⚠️ Inserisci il prezzo di vendita', true); return; }
+
+  const rows = document.querySelectorAll('#f-ing-list .ing-row');
+  if (!rows.length) { showNotifica('⚠️ Aggiungi almeno un ingrediente', true); return; }
+
+  let costoIng = 0;
+  let valide = 0;
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    const grammi = parseFloat(inputs[1].value) || 0;
+    const eurKg = parseFloat(inputs[2].value) || 0;
+    if (grammi && eurKg) {
+      costoIng += (grammi / 1000) * eurKg;
+      valide++;
+    }
+  });
+
+  if (!valide) { showNotifica('⚠️ Inserisci quantità e prezzi degli ingredienti', true); return; }
+
+  const costoSfrido = costoIng * (sfrido / 100);
+  const overhead = OVERHEAD[stagione];
+  const costoTot = costoIng + costoSfrido + overhead;
+
+  // Scorporo IVA 10%
+  const prezzoNetto = prezzoLordo / 1.10;
+  const fcPerc = (costoTot / prezzoNetto) * 100;
+  const margineEuro = prezzoNetto - costoTot;
+  const marginePerc = (margineEuro / prezzoNetto) * 100;
+
+  // Semaforo
+  let semClass, semTxt, gaugeColor, headerBg;
+  if (fcPerc <= FOOD_VERDE) {
+    semClass = 'sem-verde'; semTxt = '🟢 OTTIMO'; gaugeColor = '#00e676'; headerBg = 'rgba(0,230,118,0.05)';
+  } else if (fcPerc <= FOOD_GIALLO) {
+    semClass = 'sem-giallo'; semTxt = '🟡 BORDERLINE'; gaugeColor = '#ffd740'; headerBg = 'rgba(255,215,64,0.05)';
+  } else {
+    semClass = 'sem-rosso'; semTxt = '🔴 RIVEDI'; gaugeColor = '#ff5252'; headerBg = 'rgba(255,82,82,0.05)';
+  }
+
+  // Aggiorna UI
+  document.getElementById('f-risultato').classList.add('show');
+  document.getElementById('f-ris-header').style.background = headerBg;
+  document.getElementById('f-ris-nome').textContent = nome;
+  document.getElementById('f-semaforo').className = 'semaforo ' + semClass;
+  document.getElementById('f-semaforo').textContent = semTxt;
+  document.getElementById('f-costo-ing').textContent = '€' + costoIng.toFixed(2);
+  document.getElementById('f-costo-sfrido').textContent = '€' + costoSfrido.toFixed(2) + ' (' + sfrido + '%)';
+  document.getElementById('f-costo-overhead').textContent = '€' + overhead.toFixed(2) + ' (' + stagione + ')';
+  document.getElementById('f-costo-tot').textContent = '€' + costoTot.toFixed(2);
+  document.getElementById('f-prezzo-netto').textContent = '€' + prezzoNetto.toFixed(2);
+  document.getElementById('f-fc-perc').textContent = fcPerc.toFixed(1) + '%';
+  document.getElementById('f-fc-perc').className = 'ris-val ' + (fcPerc <= FOOD_VERDE ? 'verde' : fcPerc <= FOOD_GIALLO ? 'giallo' : 'rosso');
+  document.getElementById('f-margine-euro').textContent = '€' + margineEuro.toFixed(2);
+  document.getElementById('f-margine-perc').textContent = marginePerc.toFixed(1) + '%';
+
+  const gauge = document.getElementById('f-gauge');
+  gauge.style.width = Math.min(fcPerc, 100) + '%';
+  gauge.style.background = gaugeColor;
+
+  // Scroll al risultato
+  setTimeout(() => document.getElementById('f-risultato').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+
+  // Salva in memoria per il tasto salva
+  window._lastFood = { tipo:'food', nome, prezzoLordo, prezzoNetto, costoTot, costoIng, fcPerc, margineEuro, marginePerc, stagione, semTxt };
+}
+
+// ===================== CALCOLA DRINK =====================
+function calcolaDrink() {
+  const nome = document.getElementById('d-nome').value.trim();
+  const prezzoLordo = parseFloat(document.getElementById('d-prezzo').value) || 0;
+
+  if (!nome) { showNotifica('⚠️ Inserisci il nome del cocktail', true); return; }
+  if (!prezzoLordo) { showNotifica('⚠️ Inserisci il prezzo di vendita', true); return; }
+
+  const rows = document.querySelectorAll('#d-ing-list .ing-row');
+  if (!rows.length) { showNotifica('⚠️ Aggiungi almeno un ingrediente', true); return; }
+
+  let costoIng = 0;
+  let valide = 0;
+  rows.forEach(r => {
+    const inputs = r.querySelectorAll('input');
+    const cl = parseFloat(inputs[1].value) || 0;
+    const eurLt = parseFloat(inputs[2].value) || 0;
+    if (cl && eurLt) {
+      costoIng += (cl / 100) * eurLt;
+      valide++;
+    }
+  });
+
+  if (!valide) { showNotifica('⚠️ Inserisci dosi e prezzi degli ingredienti', true); return; }
+
+  // Scorporo IVA 22%
+  const prezzoNetto = prezzoLordo / 1.22;
+  const dcPerc = (costoIng / prezzoNetto) * 100;
+  const margineEuro = prezzoNetto - costoIng;
+  const marginePerc = (margineEuro / prezzoNetto) * 100;
+
+  let semClass, semTxt, gaugeColor, headerBg;
+  if (dcPerc <= DRINK_VERDE) {
+    semClass = 'sem-verde'; semTxt = '🟢 OTTIMO'; gaugeColor = '#00e676'; headerBg = 'rgba(0,230,118,0.05)';
+  } else if (dcPerc <= DRINK_GIALLO) {
+    semClass = 'sem-giallo'; semTxt = '🟡 BORDERLINE'; gaugeColor = '#ffd740'; headerBg = 'rgba(255,215,64,0.05)';
+  } else {
+    semClass = 'sem-rosso'; semTxt = '🔴 RIVEDI'; gaugeColor = '#ff5252'; headerBg = 'rgba(255,82,82,0.05)';
+  }
+
+  document.getElementById('d-risultato').classList.add('show');
+  document.getElementById('d-ris-header').style.background = headerBg;
+  document.getElementById('d-ris-nome').textContent = nome;
+  document.getElementById('d-semaforo').className = 'semaforo ' + semClass;
+  document.getElementById('d-semaforo').textContent = semTxt;
+  document.getElementById('d-costo-ing').textContent = '€' + costoIng.toFixed(2);
+  document.getElementById('d-prezzo-netto').textContent = '€' + prezzoNetto.toFixed(2);
+  document.getElementById('d-dc-perc').textContent = dcPerc.toFixed(1) + '%';
+  document.getElementById('d-dc-perc').className = 'ris-val ' + (dcPerc <= DRINK_VERDE ? 'verde' : dcPerc <= DRINK_GIALLO ? 'giallo' : 'rosso');
+  document.getElementById('d-margine-euro').textContent = '€' + margineEuro.toFixed(2);
+  document.getElementById('d-margine-perc').textContent = marginePerc.toFixed(1) + '%';
+
+  const gauge = document.getElementById('d-gauge');
+  gauge.style.width = Math.min(dcPerc, 100) + '%';
+  gauge.style.background = gaugeColor;
+
+  setTimeout(() => document.getElementById('d-risultato').scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
+
+  window._lastDrink = { tipo:'drink', nome, prezzoLordo, prezzoNetto, costoIng, dcPerc, margineEuro, marginePerc, semTxt };
+}
+
+// ===================== SALVA =====================
+function salvaRisultato(tipo) {
+  const item = tipo === 'food' ? window._lastFood : window._lastDrink;
+  if (!item) return;
+
+  // Evita duplicati — aggiorna se esiste
+  const idx = savedItems.findIndex(x => x.nome === item.nome && x.tipo === item.tipo);
+  if (idx >= 0) savedItems[idx] = { ...item, ts: Date.now() };
+  else savedItems.unshift({ ...item, ts: Date.now() });
+
+  localStorage.setItem('chalet_costs', JSON.stringify(savedItems));
+  showNotifica('✅ ' + item.nome + ' salvato!');
+}
+
+// ===================== LISTA SALVATI =====================
+function renderSalvati() {
+  const wrap = document.getElementById('saved-list-wrap');
+  if (!savedItems.length) {
+    wrap.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Nessun piatto salvato ancora.<br>Calcola e salva il tuo primo piatto!</div></div>';
+    return;
+  }
+
+  // Raggruppa per tipo
+  const foods = savedItems.filter(x => x.tipo === 'food');
+  const drinks = savedItems.filter(x => x.tipo === 'drink');
+
+  let html = '';
+
+  if (foods.length) {
+    html += '<div style="font-size:10px;color:var(--muted2);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:4px">🍝 Food</div>';
+    foods.forEach((item, i) => {
+      const perc = item.tipo === 'food' ? item.fcPerc : item.dcPerc;
+      const color = perc <= (item.tipo==='food'?FOOD_VERDE:DRINK_VERDE) ? 'var(--verde)' : perc <= (item.tipo==='food'?FOOD_GIALLO:DRINK_GIALLO) ? 'var(--giallo)' : 'var(--rosso)';
+      html += `<div class="saved-item">
+        <div class="saved-dot" style="background:${color}"></div>
+        <div class="saved-info">
+          <div class="saved-nome">${item.nome}</div>
+          <div class="saved-dettaglio">Vendita €${item.prezzoLordo.toFixed(2)} · Cost ${perc.toFixed(1)}% · Margine €${item.margineEuro.toFixed(2)}</div>
+        </div>
+        <div class="saved-margine" style="color:${color}">${item.marginePerc.toFixed(0)}%</div>
+        <button class="saved-del" onclick="deleteSaved(${savedItems.indexOf(item)})">✕</button>
+      </div>`;
+    });
+  }
+
+  if (drinks.length) {
+    html += '<div style="font-size:10px;color:var(--muted2);font-family:var(--font-mono);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:12px">🍹 Drink</div>';
+    drinks.forEach((item) => {
+      const perc = item.dcPerc;
+      const color = perc <= DRINK_VERDE ? 'var(--verde)' : perc <= DRINK_GIALLO ? 'var(--giallo)' : 'var(--rosso)';
+      html += `<div class="saved-item">
+        <div class="saved-dot" style="background:${color}"></div>
+        <div class="saved-info">
+          <div class="saved-nome">${item.nome}</div>
+          <div class="saved-dettaglio">Vendita €${item.prezzoLordo.toFixed(2)} · Cost ${perc.toFixed(1)}% · Margine €${item.margineEuro.toFixed(2)}</div>
+        </div>
+        <div class="saved-margine" style="color:${color}">${item.marginePerc.toFixed(0)}%</div>
+        <button class="saved-del" onclick="deleteSaved(${savedItems.indexOf(item)})">✕</button>
+      </div>`;
+    });
+  }
+
+  wrap.innerHTML = html;
+}
+
+function deleteSaved(idx) {
+  savedItems.splice(idx, 1);
+  localStorage.setItem('chalet_costs', JSON.stringify(savedItems));
+  renderSalvati();
+}
+
+// ===================== NOTIFICA =====================
+function showNotifica(msg, err=false) {
+  const el = document.getElementById('notifica');
+  el.textContent = msg;
+  el.style.background = err ? 'var(--rosso)' : 'var(--verde)';
+  el.style.color = err ? '#fff' : '#000';
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 2500);
+}
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+  // Aggiungi primo ingrediente di default
+  addIng('f-ing-list');
+  addIng('d-ing-list');
+  setStagione('media', document.querySelectorAll('.s-btn')[1]);
+});
+</script>
+</body>
+</html>

@@ -107,9 +107,7 @@
   <button class="nav-btn active" onclick="showSection('fatture',this)">📄 Fatture</button>
   <button class="nav-btn" onclick="showSection('listino',this)">📊 Listino</button>
   <button class="nav-btn" onclick="showSection('menu',this)">🍽️ Menu</button>
-  <button class="nav-btn" onclick="showSection('foodcost',this)">🍝 Food Cost</button>
-  <button class="nav-btn" onclick="showSection('drinkcost',this)">🍹 Drink</button>
-  <button class="nav-btn" onclick="showSection('haccp',this)">🌡️ HACCP</button>
+    <button class="nav-btn" onclick="showSection('haccp',this)">🌡️ HACCP</button>
 </nav>
 
 <div class="content">
@@ -119,8 +117,8 @@
   <div id="sec-fatture" class="section active">
     <div class="section-head"><h2>Fatture & DDT</h2><p>Inserisci ogni consegna — il listino si aggiorna in automatico</p></div>
     <div class="stats-row">
-      <div class="stat-box"><div class="stat-val" id="st-fatture-n">—</div><div class="stat-lbl">Fatture</div></div>
-      <div class="stat-box"><div class="stat-val oro" id="st-fatture-tot">—</div><div class="stat-lbl">Spesa tot.</div></div>
+      <div class="stat-box"><div class="stat-val" id="st-fatture-n">—</div><div class="stat-lbl">Fatture Estive</div></div>
+      <div class="stat-box"><div class="stat-val oro" id="st-fatture-tot">—</div><div class="stat-lbl">Spesa Estiva</div></div>
       <div class="stat-box"><div class="stat-val" id="st-fornitori-n">—</div><div class="stat-lbl">Fornitori</div></div>
     </div>
     <div class="card">
@@ -142,6 +140,16 @@
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
         <button class="btn btn-verde" onclick="addFattura()">💾 Salva</button>
         <button class="btn btn-outline btn-sm" onclick="clearFattura()">✕ Cancella</button>
+      </div>
+      <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+        <label style="margin-bottom:6px;display:block">📎 Oppure carica foto o PDF fattura</label>
+        <div class="upload-zone" onclick="document.getElementById('file-fattura').click()">
+          <div class="upload-icon">📷</div>
+          <div class="upload-txt">Foto o PDF fattura</div>
+          <div class="upload-sub">Tocca per scattare una foto o scegli un file</div>
+        </div>
+        <input type="file" id="file-fattura" accept="image/*,application/pdf" capture="environment" style="display:none" onchange="caricaFileFattura(this)">
+        <div id="upload-result" style="display:none;margin-top:8px"></div>
       </div>
     </div>
     <div class="card">
@@ -206,66 +214,6 @@
     </div>
   </div>
 
-  <!-- FOOD COST -->
-  <div id="sec-foodcost" class="section">
-    <div class="section-head"><h2>Food Cost</h2><p>Calcola il margine di ogni piatto — prezzi dal listino</p></div>
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-val oro" id="st-fc-avg">—</div><div class="stat-lbl">Food cost medio</div></div>
-      <div class="stat-box"><div class="stat-val" id="st-fc-margine">—</div><div class="stat-lbl">Margine medio</div></div>
-      <div class="stat-box"><div class="stat-val" id="st-fc-piatti">—</div><div class="stat-lbl">Piatti analizzati</div></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="card-icon">🍝</span> Nuovo Piatto da Analizzare</div>
-      <div class="form-row">
-        <div><label>Piatto</label><select id="fc-piatto"><option value="">Seleziona dal menu...</option></select></div>
-        <div><label>Prezzo menu €</label><input type="number" id="fc-prezzo" step="0.5" placeholder="0.00"></div>
-      </div>
-      <div id="fc-ingredienti">
-        <label style="margin-bottom:6px;display:block">Ingredienti</label>
-        <div id="fc-ing-list"></div>
-        <button class="btn btn-outline btn-sm" onclick="addIngrediente('fc-ing-list')">➕ Aggiungi ingrediente</button>
-      </div>
-      <button class="btn btn-verde btn-full" onclick="calcolaFoodCost()">📊 Calcola e Salva</button>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="card-icon">🏆</span> Classifica Piatti per Margine</div>
-      <div id="list-foodcost"><div class="loading"><span class="spinner"></span>Carico...</div></div>
-    </div>
-  </div>
-
-  <!-- DRINK COST -->
-  <div id="sec-drinkcost" class="section">
-    <div class="section-head"><h2>Drink Cost</h2><p>Ricette cocktail e analisi margine</p></div>
-    <div class="stats-row">
-      <div class="stat-box"><div class="stat-val oro" id="st-dc-avg">—</div><div class="stat-lbl">Drink cost medio</div></div>
-      <div class="stat-box"><div class="stat-val" id="st-dc-margine">—</div><div class="stat-lbl">Margine medio</div></div>
-      <div class="stat-box"><div class="stat-val" id="st-dc-n">—</div><div class="stat-lbl">Cocktail</div></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="card-icon">🍹</span> Nuovo Cocktail</div>
-      <div class="form-row">
-        <div><label>Nome cocktail</label><input type="text" id="dc-nome" placeholder="es. Gin Amiata Tonic"></div>
-        <div><label>Prezzo vendita €</label><input type="number" id="dc-prezzo" step="0.5" placeholder="0.00"></div>
-      </div>
-      <div id="dc-ingredienti">
-        <label style="margin-bottom:6px;display:block">Ricetta</label>
-        <div style="display:grid;grid-template-columns:2fr 1fr auto 1fr auto;gap:6px;margin-bottom:4px;padding:0 2px">
-          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Ingrediente</span>
-          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Cl</span>
-          <span></span>
-          <span style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">€/lt</span>
-          <span></span>
-        </div>
-        <div id="dc-ing-list"></div>
-        <button class="btn btn-outline btn-sm" onclick="addIngredienteDrink('dc-ing-list')">➕ Aggiungi ingrediente</button>
-      </div>
-      <button class="btn btn-verde btn-full" onclick="calcolaDrinkCost()">📊 Calcola e Salva</button>
-    </div>
-    <div class="card">
-      <div class="card-title"><span class="card-icon">🏆</span> Classifica Cocktail</div>
-      <div id="list-drinkcost"><div class="loading"><span class="spinner"></span>Carico...</div></div>
-    </div>
-  </div>
 
   <!-- HACCP -->
   <div id="sec-haccp" class="section">
@@ -386,11 +334,27 @@ async function caricaFatture() {
   }
 }
 
+const INIZIO_ESTIVA = new Date('2026-05-16');
+function isEstiva(dataStr) {
+  if (!dataStr) return false;
+  // dataStr può essere dd/mm/yyyy o yyyy-mm-dd
+  var d;
+  if (dataStr.includes('/')) {
+    var p = dataStr.split('/');
+    d = new Date(p[2], p[1]-1, p[0]);
+  } else {
+    d = new Date(dataStr);
+  }
+  return d >= INIZIO_ESTIVA;
+}
+
 function aggiornaStatsFatture() {
-  const f = filtroFatture === 'all' ? fatture : fatture.filter(x => x.tipo === filtroFatture);
-  const tot = f.reduce((s,x) => s + (parseFloat(x.prezzoTot)||0), 0);
-  const fornitori = new Set(f.map(x => x.fornitore)).size;
-  document.getElementById('st-fatture-n').textContent = f.length;
+  var all = filtroFatture === 'all' ? fatture : fatture.filter(function(x){ return x.tipo === filtroFatture; });
+  // Contatore e spesa solo stagione estiva
+  var estive = all.filter(function(x){ return isEstiva(x.data); });
+  var tot = estive.reduce(function(s,x){ return s + (parseFloat(x.prezzoTot)||0); }, 0);
+  var fornitori = new Set(estive.map(function(x){ return x.fornitore; })).size;
+  document.getElementById('st-fatture-n').textContent = estive.length;
   document.getElementById('st-fatture-tot').textContent = '€' + tot.toFixed(0);
   document.getElementById('st-fornitori-n').textContent = fornitori;
 }
@@ -750,6 +714,22 @@ async function addPrep() {
   if (res.ok) { showMsg('Scheda salvata!','ok'); caricaPrep(); document.getElementById('hp-prep').value=''; }
   else showMsg(res.msg,'err');
 }
+
+// ── CARICA FILE FATTURA ──
+function caricaFileFattura(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var res = document.getElementById('upload-result');
+  res.style.display = 'block';
+  res.innerHTML = '<div class="alert alert-info">📎 File caricato: <strong>' + file.name + '</strong><br>Compila i campi sopra con i dati della fattura e premi Salva.</div>';
+  // Pre-compila data con oggi se vuota
+  var dataField = document.getElementById('f-data');
+  if (!dataField.value) {
+    dataField.value = new Date().toISOString().split('T')[0];
+  }
+  input.value = '';
+}
+
 </script>
 </body>
 </html>

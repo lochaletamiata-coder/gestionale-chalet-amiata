@@ -107,11 +107,17 @@ tbody tr:hover td{background:var(--oro-xl);}
 .mf-low{background:var(--rosso);}
 
 /* ING ROW */
-.ing-row{display:grid;grid-template-columns:2fr 80px 80px 32px;gap:6px;margin-bottom:6px;align-items:center;}
+.ing-row{display:grid;grid-template-columns:2fr 80px 80px 32px;gap:6px;margin-bottom:6px;align-items:center;position:relative;}
 .ing-row input{padding:8px 10px;font-size:12px;}
 .ing-hdr{display:grid;grid-template-columns:2fr 80px 80px 32px;gap:6px;margin-bottom:4px;}
 .ing-hdr span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 .btn-del{width:32px;height:36px;background:var(--rosso-l);border:none;border-radius:6px;color:var(--rosso);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+/* AUTOCOMPLETE DROPDOWN */
+.ac-dd{position:absolute;top:calc(100% + 2px);left:0;width:calc(200% + 6px);background:#fff;border:1px solid var(--oro);border-radius:8px;z-index:300;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.15);display:none;max-height:200px;overflow-y:auto;}
+.ac-item{padding:8px 12px;cursor:pointer;font-size:12px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:hover{background:var(--oro-xl);}
+.ac-prezzo{color:var(--oro);font-weight:700;font-size:11px;margin-left:8px;white-space:nowrap;}
 
 /* ALERT */
 .alert{padding:.75rem 1rem;border-radius:8px;font-size:13px;margin-bottom:1rem;}
@@ -319,6 +325,7 @@ let filtroF='all', filtroL='all';
 document.addEventListener('DOMContentLoaded', function(){
   document.getElementById('f-data').value = new Date().toISOString().split('T')[0];
   caricaFatture();
+  caricaListino();
 });
 
 // ── NAV ──
@@ -328,8 +335,8 @@ function showSection(id, btn){
   document.getElementById('sec-'+id).classList.add('active');
   btn.classList.add('active');
   if(id==='listino') caricaListino();
-  if(id==='foodcost') caricaFC();
-  if(id==='drinkcost') caricaDC();
+  if(id==='foodcost'){ if(!listino.length) caricaListino(); caricaFC(); }
+  if(id==='drinkcost'){ if(!listino.length) caricaListino(); caricaDC(); }
 }
 
 // ── API ──
@@ -474,16 +481,61 @@ function renderListino(){
   wrap.innerHTML='<table><thead><tr><th>Articolo</th><th>Tipo</th><th>€/Kg</th><th>Stato</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 
+// ── AUTOCOMPLETE INGREDIENTI ──
+function cercaListino(q, tipo){
+  if(!q||q.length<2) return [];
+  return listino.filter(function(x){
+    var match = x.articolo.toLowerCase().indexOf(q.toLowerCase()) !== -1;
+    // per food mostra tutto, per drink preferisce beverage
+    return match;
+  }).slice(0,7);
+}
+
+function creaIngRow(containerId, tipo){
+  var row = document.createElement('div');
+  row.className = 'ing-row';
+  var phQta = tipo==='food' ? 'g' : 'cl';
+  var phPrz = tipo==='food' ? '€/kg' : '€/lt';
+  row.innerHTML =
+    '<input type="text" placeholder="Ingrediente" autocomplete="off">'+
+    '<input type="number" step="'+(tipo==='food'?'1':'0.1')+'" min="0" placeholder="'+phQta+'">'+
+    '<input type="number" step="0.01" min="0" placeholder="'+phPrz+'" readonly style="background:var(--oro-xl);color:var(--bruno);font-weight:700;cursor:default;">'+
+    '<button class="btn-del" onclick="this.closest(\'.ing-row\').remove()">✕</button>'+
+    '<div class="ac-dd"></div>';
+
+  var nomeInp = row.querySelector('input:nth-of-type(1)');
+  var prezInp = row.querySelector('input:nth-of-type(3)');
+  var dd = row.querySelector('.ac-dd');
+
+  nomeInp.addEventListener('input', function(){
+    var q = nomeInp.value;
+    var res = cercaListino(q, tipo);
+    if(!res.length){ dd.style.display='none'; return; }
+    dd.innerHTML = res.map(function(r){
+      return '<div class="ac-item" data-p="'+r.prezzoAttuale+'" data-n="'+r.articolo+'">'+
+        '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+r.articolo+'</span>'+
+        '<span class="ac-prezzo">€'+r.prezzoAttuale.toFixed(2)+'</span>'+
+        '</div>';
+    }).join('');
+    dd.style.display = 'block';
+    dd.querySelectorAll('.ac-item').forEach(function(item){
+      item.addEventListener('mousedown', function(e){
+        e.preventDefault();
+        nomeInp.value = item.dataset.n;
+        prezInp.value = parseFloat(item.dataset.p).toFixed(2);
+        dd.style.display = 'none';
+      });
+    });
+  });
+  nomeInp.addEventListener('blur', function(){ setTimeout(function(){ dd.style.display='none'; }, 200); });
+
+  document.getElementById(containerId).appendChild(row);
+  nomeInp.focus();
+}
+
 // ── FOOD COST ──
 function addIngFC(){
-  var row=document.createElement('div');
-  row.className='ing-row';
-  row.innerHTML=
-    '<input type="text" placeholder="Ingrediente" list="dl-articoli">'+
-    '<input type="number" step="1" min="0" placeholder="g">'+
-    '<input type="number" step="0.01" min="0" placeholder="€/kg">'+
-    '<button class="btn-del" onclick="this.parentElement.remove()">✕</button>';
-  document.getElementById('fc-ing-list').appendChild(row);
+  creaIngRow('fc-ing-list', 'food');
 }
 
 async function calcolaFC(){
@@ -568,14 +620,7 @@ function renderFC(){
 
 // ── DRINK COST ──
 function addIngDC(){
-  var row=document.createElement('div');
-  row.className='ing-row';
-  row.innerHTML=
-    '<input type="text" placeholder="Ingrediente" list="dl-articoli">'+
-    '<input type="number" step="0.1" min="0" placeholder="cl">'+
-    '<input type="number" step="0.01" min="0" placeholder="€/lt">'+
-    '<button class="btn-del" onclick="this.parentElement.remove()">✕</button>';
-  document.getElementById('dc-ing-list').appendChild(row);
+  creaIngRow('dc-ing-list', 'drink');
 }
 
 async function calcolaDC(){

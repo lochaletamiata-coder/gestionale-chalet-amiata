@@ -47,10 +47,12 @@ input:focus{border-color:var(--oro);background:white;}
 .btn-blu{background:#0c63c4;color:white;padding:6px 10px;font-size:11px;}
 .btn-full{width:100%;justify-content:center;margin-top:10px;}
 .btn-grp{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
-.ing-row{display:grid;grid-template-columns:2fr 70px 80px 32px;gap:6px;margin-bottom:6px;align-items:center;}
-.ing-row input{padding:9px 10px;font-size:13px;}
-.ing-hdr{display:grid;grid-template-columns:2fr 70px 80px 32px;gap:6px;margin-bottom:6px;}
-.ing-hdr span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.ing-row{display:grid;grid-template-columns:1.6fr 60px 55px 75px 32px;gap:5px;margin-bottom:6px;align-items:center;}
+.ing-row input{padding:9px 8px;font-size:13px;}
+.ing-row select{padding:9px 4px;font-size:12px;border:1px solid var(--border);border-radius:8px;background:var(--bg);outline:none;-webkit-appearance:none;text-align:center;font-weight:700;color:var(--bruno-l);cursor:pointer;}
+.ing-hdr{display:grid;grid-template-columns:1.6fr 60px 55px 75px 32px;gap:5px;margin-bottom:6px;}
+.ing-hdr span{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;text-align:center;}
+.ing-hdr span:first-child{text-align:left;}
 .btn-del{width:32px;height:36px;background:var(--rosso-l);border:none;border-radius:6px;color:var(--rosso);font-size:13px;cursor:pointer;}
 .result{margin-top:1rem;padding:1.2rem;border-radius:12px;border-left:4px solid var(--oro);background:var(--oro-xl);}
 .result.verde{border-color:var(--verde);background:var(--verde-xl);}
@@ -83,6 +85,18 @@ input:focus{border-color:var(--oro);background:white;}
 .stat-mini-l{font-size:9px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
 .search-bar{margin-bottom:1rem;}
 .search-bar input{padding-left:38px;background:white url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'><circle cx='11' cy='11' r='8'/><path d='m21 21-4.35-4.35'/></svg>") no-repeat 12px center;}
+
+/* CONVERTITORE */
+.conv-wrap{display:grid;grid-template-columns:1fr 320px;gap:1rem;margin-bottom:1rem;}
+@media(max-width:760px){.conv-wrap{grid-template-columns:1fr;}}
+.conv-card{background:var(--bruno-l);color:white;border-radius:var(--radius);padding:1.1rem;box-shadow:var(--shadow);}
+.conv-card .card-title{color:var(--oro);border-color:rgba(201,168,76,0.25);}
+.conv-row{margin-bottom:.7rem;}
+.conv-row label{color:var(--oro-l);font-weight:700;margin-bottom:4px;}
+.conv-row input{background:rgba(255,255,255,0.06);color:white;border-color:rgba(255,255,255,0.15);}
+.conv-row input::placeholder{color:rgba(255,255,255,0.4);}
+.conv-out{background:var(--oro);color:var(--bruno-l);padding:10px 12px;border-radius:8px;font-weight:700;font-size:14px;margin-top:5px;text-align:center;}
+.conv-out small{font-weight:400;opacity:.8;display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;}
 </style>
 </head>
 <body>
@@ -108,6 +122,7 @@ input:focus{border-color:var(--oro);background:white;}
   <!-- FOOD -->
   <div id="sec-food" class="section active">
     <div class="section-head"><h2>Food Cost</h2><p>Calcola e salva ogni piatto</p></div>
+    <div class="conv-wrap">
     <div class="card">
       <div class="card-title">🍝 Nuovo Piatto</div>
       <div class="form-row">
@@ -115,7 +130,7 @@ input:focus{border-color:var(--oro);background:white;}
         <div><label>Prezzo vendita € (IVA 10%)</label><input type="number" id="fc-prezzo" step="0.5" placeholder="12.00"></div>
       </div>
       <div class="form-row single"><div><label>Sfrido %</label><input type="number" id="fc-sfrido" value="10" step="1"></div></div>
-      <div class="ing-hdr"><span>Ingrediente</span><span>Grammi</span><span>€/kg</span><span></span></div>
+      <div class="ing-hdr"><span>Ingrediente</span><span>Qtà</span><span>Unit</span><span>Prezzo</span><span></span></div>
       <div id="fc-ing"></div>
       <button class="btn btn-outline" onclick="addIngFC()">➕ Ingrediente</button>
       <div class="btn-grp">
@@ -125,18 +140,50 @@ input:focus{border-color:var(--oro);background:white;}
       </div>
       <div id="fc-result"></div>
     </div>
+
+    <div class="conv-card">
+      <div class="card-title">🔧 Convertitore Prezzo</div>
+      <div class="conv-row">
+        <label>Prezzo pagato €</label>
+        <input type="number" step="0.01" id="conv-tot" placeholder="es. 1.30" oninput="aggiornaConv()">
+      </div>
+      <div class="conv-row">
+        <label>Quantità totale</label>
+        <input type="number" step="0.1" id="conv-qta" placeholder="es. 15" oninput="aggiornaConv()">
+      </div>
+      <div class="conv-row">
+        <label>Unità di misura</label>
+        <select id="conv-unit" onchange="aggiornaConv()" style="width:100%;padding:11px 12px;border-radius:8px;background:rgba(255,255,255,0.06);color:white;border:1px solid rgba(255,255,255,0.15);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer;outline:none;">
+          <option value="cl">cl (centilitri)</option>
+          <option value="ml">ml (millilitri)</option>
+          <option value="lt">lt (litri)</option>
+          <option value="g">g (grammi)</option>
+          <option value="kg">kg (chili)</option>
+        </select>
+      </div>
+      <div class="conv-out" id="conv-out-1">— <small>copia in €/kg o €/lt sopra</small></div>
+      <div class="conv-out" id="conv-out-2" style="margin-top:6px;">— <small>costo per unità singola</small></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:10px;line-height:1.5;">
+        💡 Esempi:<br>
+        • Tonica €1,30 / 15 cl → €8,67/lt<br>
+        • Sacco ghiaccio €2,50 / 2 kg → €1,25/kg<br>
+        • Gin €28 / 70 cl → €40/lt
+      </div>
+    </div>
+    </div>
   </div>
 
   <!-- DRINK -->
   <div id="sec-drink" class="section">
     <div class="section-head"><h2>Drink Cost</h2><p>Calcola e salva ogni cocktail</p></div>
+    <div class="conv-wrap">
     <div class="card">
       <div class="card-title">🍹 Nuovo Cocktail</div>
       <div class="form-row">
         <div><label>Nome cocktail</label><input type="text" id="dc-nome" placeholder="es. Gin Tonic"></div>
         <div><label>Prezzo vendita € (IVA 22%)</label><input type="number" id="dc-prezzo" step="0.5" placeholder="10.00"></div>
       </div>
-      <div class="ing-hdr"><span>Ingrediente</span><span>Cl</span><span>€/lt</span><span></span></div>
+      <div class="ing-hdr"><span>Ingrediente</span><span>Qtà</span><span>Unit</span><span>Prezzo</span><span></span></div>
       <div id="dc-ing"></div>
       <button class="btn btn-outline" onclick="addIngDC()">➕ Ingrediente</button>
       <div class="btn-grp">
@@ -145,6 +192,37 @@ input:focus{border-color:var(--oro);background:white;}
         <button class="btn btn-outline" onclick="resetDC()">🔄 Nuovo</button>
       </div>
       <div id="dc-result"></div>
+    </div>
+
+    <div class="conv-card">
+      <div class="card-title">🔧 Convertitore Prezzo</div>
+      <div class="conv-row">
+        <label>Prezzo pagato €</label>
+        <input type="number" step="0.01" id="conv2-tot" placeholder="es. 1.30" oninput="aggiornaConv2()">
+      </div>
+      <div class="conv-row">
+        <label>Quantità totale</label>
+        <input type="number" step="0.1" id="conv2-qta" placeholder="es. 15" oninput="aggiornaConv2()">
+      </div>
+      <div class="conv-row">
+        <label>Unità di misura</label>
+        <select id="conv2-unit" onchange="aggiornaConv2()" style="width:100%;padding:11px 12px;border-radius:8px;background:rgba(255,255,255,0.06);color:white;border:1px solid rgba(255,255,255,0.15);font-family:'Lato',sans-serif;font-size:14px;font-weight:700;cursor:pointer;outline:none;">
+          <option value="cl">cl (centilitri)</option>
+          <option value="ml">ml (millilitri)</option>
+          <option value="lt">lt (litri)</option>
+          <option value="g">g (grammi)</option>
+          <option value="kg">kg (chili)</option>
+        </select>
+      </div>
+      <div class="conv-out" id="conv2-out-1">— <small>copia in €/lt o €/kg sopra</small></div>
+      <div class="conv-out" id="conv2-out-2" style="margin-top:6px;">— <small>costo per unità singola</small></div>
+      <div style="font-size:11px;color:rgba(255,255,255,0.55);margin-top:10px;line-height:1.5;">
+        💡 Esempi:<br>
+        • Tonica €1,30 / 15 cl → €8,67/lt<br>
+        • Sacco ghiaccio €2,50 / 2 kg → €1,25/kg<br>
+        • Gin €28 / 70 cl → €40/lt
+      </div>
+    </div>
     </div>
   </div>
 
@@ -230,9 +308,24 @@ function showRank(tipo, btn){
 function addIngFC(){
   var row=document.createElement('div');
   row.className='ing-row';
-  row.innerHTML='<input type="text" placeholder="Ingrediente"><input type="number" step="1" min="0" placeholder="g"><input type="number" step="0.01" min="0" placeholder="€/kg"><button class="btn-del" onclick="this.parentElement.remove()">✕</button>';
+  row.innerHTML='<input type="text" placeholder="Ingrediente">'+
+    '<input type="number" step="0.1" min="0" placeholder="qtà">'+
+    '<select onchange="aggiornaPrezzoLabel(this)"><option value="g">g</option><option value="cl">cl</option><option value="ml">ml</option></select>'+
+    '<input type="number" step="0.01" min="0" placeholder="€/kg">'+
+    '<button class="btn-del" onclick="this.parentElement.remove()">✕</button>';
   document.getElementById('fc-ing').appendChild(row);
   row.querySelector('input').focus();
+}
+
+function aggiornaPrezzoLabel(sel){
+  var row=sel.parentElement;
+  var inputs=row.querySelectorAll('input');
+  var prezzoInp=inputs[inputs.length-1];
+  if(sel.value==='g'){
+    prezzoInp.placeholder='€/kg';
+  } else {
+    prezzoInp.placeholder='€/lt';
+  }
 }
 
 function resetFC(){
@@ -254,10 +347,19 @@ function calcolaFC(salva){
   var ci=0, ingr=[];
   rows.forEach(function(r){
     var inp=r.querySelectorAll('input');
+    var sel=r.querySelector('select');
     var n=inp[0].value.trim();
-    var g=parseFloat(inp[1].value)||0;
+    var qta=parseFloat(inp[1].value)||0;
     var p=parseFloat(inp[2].value)||0;
-    if(g&&p){ ci+=(g/1000)*p; ingr.push({nome:n,g:g,p:p}); }
+    var unit=sel.value;
+    if(qta&&p){
+      var costo=0;
+      if(unit==='g') costo=(qta/1000)*p;
+      else if(unit==='ml') costo=(qta/1000)*p;
+      else if(unit==='cl') costo=(qta/100)*p;
+      ci+=costo;
+      ingr.push({nome:n,qta:qta,unit:unit,p:p});
+    }
   });
   if(!ci){ toast('Inserisci almeno un ingrediente', true); return; }
   var cs=ci*(sfrido/100);
@@ -267,8 +369,8 @@ function calcolaFC(salva){
   var fcP=(ct/pN)*100;
   var mE=pN-ct;
   var mP=(mE/pN)*100;
-  var cls=fcP<=32?'verde':fcP<=42?'':'rosso';
-  var sem=fcP<=32?'🟢 OTTIMO':fcP<=42?'🟡 BORDERLINE':'🔴 ALTO';
+  var cls=fcP<=33?'verde':fcP<=42?'':'rosso';
+  var sem=fcP<=33?'🟢 TOP':fcP<=42?'🟠 OK':'🔴 MARGINE';
   document.getElementById('fc-result').innerHTML='<div class="result '+cls+'"><div class="result-head"><strong>'+(nome||'Piatto')+'</strong><span class="sem">'+sem+'</span></div><div class="result-line"><span>Costo ingredienti</span><strong>€'+ci.toFixed(2)+'</strong></div><div class="result-line"><span>Sfrido ('+sfrido+'%)</span><strong>€'+cs.toFixed(2)+'</strong></div><div class="result-line"><span>Overhead</span><strong>€'+overhead.toFixed(2)+'</strong></div><div class="result-line total"><span>Costo totale</span><strong>€'+ct.toFixed(2)+'</strong></div><div class="result-line"><span>Prezzo netto</span><strong>€'+pN.toFixed(2)+'</strong></div><div class="result-line"><span>Food Cost %</span><strong>'+fcP.toFixed(1)+'%</strong></div><div class="result-line"><span>Margine €</span><strong>€'+mE.toFixed(2)+'</strong></div><div class="result-line"><span>Margine %</span><strong>'+mP.toFixed(1)+'%</strong></div></div>';
   if(salva){
     var foods=getFoods();
@@ -282,7 +384,11 @@ function calcolaFC(salva){
 function addIngDC(){
   var row=document.createElement('div');
   row.className='ing-row';
-  row.innerHTML='<input type="text" placeholder="Ingrediente"><input type="number" step="0.1" min="0" placeholder="cl"><input type="number" step="0.01" min="0" placeholder="€/lt"><button class="btn-del" onclick="this.parentElement.remove()">✕</button>';
+  row.innerHTML='<input type="text" placeholder="Ingrediente">'+
+    '<input type="number" step="0.1" min="0" placeholder="qtà">'+
+    '<select onchange="aggiornaPrezzoLabel(this)"><option value="cl">cl</option><option value="ml">ml</option><option value="g">g</option></select>'+
+    '<input type="number" step="0.01" min="0" placeholder="€/lt">'+
+    '<button class="btn-del" onclick="this.parentElement.remove()">✕</button>';
   document.getElementById('dc-ing').appendChild(row);
   row.querySelector('input').focus();
 }
@@ -304,18 +410,27 @@ function calcolaDC(salva){
   var ci=0, ingr=[];
   rows.forEach(function(r){
     var inp=r.querySelectorAll('input');
+    var sel=r.querySelector('select');
     var n=inp[0].value.trim();
-    var cl=parseFloat(inp[1].value)||0;
+    var qta=parseFloat(inp[1].value)||0;
     var p=parseFloat(inp[2].value)||0;
-    if(cl&&p){ ci+=(cl/100)*p; ingr.push({nome:n,cl:cl,p:p}); }
+    var unit=sel.value;
+    if(qta&&p){
+      var costo=0;
+      if(unit==='cl') costo=(qta/100)*p;
+      else if(unit==='ml') costo=(qta/1000)*p;
+      else if(unit==='g') costo=(qta/1000)*p;
+      ci+=costo;
+      ingr.push({nome:n,qta:qta,unit:unit,p:p});
+    }
   });
   if(!ci){ toast('Inserisci almeno un ingrediente', true); return; }
   var pN=pL/1.22;
   var dcP=(ci/pN)*100;
   var mE=pN-ci;
   var mP=(mE/pN)*100;
-  var cls=dcP<=18?'verde':dcP<=28?'':'rosso';
-  var sem=dcP<=18?'🟢 OTTIMO':dcP<=28?'🟡 BORDERLINE':'🔴 ALTO';
+  var cls=dcP<=25?'verde':dcP<=33?'':'rosso';
+  var sem=dcP<=25?'🟢 TOP':dcP<=33?'🟠 OK':'🔴 MARGINE';
   document.getElementById('dc-result').innerHTML='<div class="result '+cls+'"><div class="result-head"><strong>'+(nome||'Cocktail')+'</strong><span class="sem">'+sem+'</span></div><div class="result-line"><span>Costo ingredienti</span><strong>€'+ci.toFixed(2)+'</strong></div><div class="result-line"><span>Prezzo netto</span><strong>€'+pN.toFixed(2)+'</strong></div><div class="result-line total"><span>Drink Cost %</span><strong>'+dcP.toFixed(1)+'%</strong></div><div class="result-line"><span>Margine €</span><strong>€'+mE.toFixed(2)+'</strong></div><div class="result-line"><span>Margine %</span><strong>'+mP.toFixed(1)+'%</strong></div></div>';
   if(salva){
     var drinks=getDrinks();
@@ -386,10 +501,16 @@ function caricaItem(tipo, nome){
     item.ingredienti.forEach(function(ing){
       addIngFC();
       var rows=document.querySelectorAll('#fc-ing .ing-row');
-      var inp=rows[rows.length-1].querySelectorAll('input');
-      inp[0].value=ing.nome; inp[1].value=ing.g; inp[2].value=ing.p;
+      var lastRow=rows[rows.length-1];
+      var inp=lastRow.querySelectorAll('input');
+      var sel=lastRow.querySelector('select');
+      inp[0].value=ing.nome;
+      // retrocompatibilità
+      inp[1].value=ing.qta||ing.g||0;
+      sel.value=ing.unit||'g';
+      aggiornaPrezzoLabel(sel);
+      inp[2].value=ing.p;
     });
-    // Switch tab
     var foodTab=document.querySelector('.tab:nth-child(1)');
     showTab('food', foodTab);
   } else {
@@ -402,8 +523,14 @@ function caricaItem(tipo, nome){
     item.ingredienti.forEach(function(ing){
       addIngDC();
       var rows=document.querySelectorAll('#dc-ing .ing-row');
-      var inp=rows[rows.length-1].querySelectorAll('input');
-      inp[0].value=ing.nome; inp[1].value=ing.cl; inp[2].value=ing.p;
+      var lastRow=rows[rows.length-1];
+      var inp=lastRow.querySelectorAll('input');
+      var sel=lastRow.querySelector('select');
+      inp[0].value=ing.nome;
+      inp[1].value=ing.qta||ing.cl||0;
+      sel.value=ing.unit||'cl';
+      aggiornaPrezzoLabel(sel);
+      inp[2].value=ing.p;
     });
     var drinkTab=document.querySelector('.tab:nth-child(2)');
     showTab('drink', drinkTab);
@@ -444,6 +571,91 @@ function eliminaItem(tipo, nome){
 
 addIngFC();
 addIngDC();
+
+// ── CONVERTITORE FOOD ──
+function aggiornaConv(){
+  var prezzo=parseFloat(document.getElementById('conv-tot').value)||0;
+  var qta=parseFloat(document.getElementById('conv-qta').value)||0;
+  var unit=document.getElementById('conv-unit').value;
+  var out1=document.getElementById('conv-out-1');
+  var out2=document.getElementById('conv-out-2');
+  if(!prezzo || !qta){
+    out1.innerHTML = '— <small>copia in €/kg o €/lt sopra</small>';
+    out2.innerHTML = '— <small>costo per unità singola</small>';
+    return;
+  }
+  var risultato = calcolaConversione(prezzo, qta, unit);
+  out1.innerHTML = risultato.principale + ' <small>'+risultato.lblPrincipale+'</small>';
+  out2.innerHTML = risultato.unitario + ' <small>'+risultato.lblUnitario+'</small>';
+}
+
+// ── CONVERTITORE DRINK ──
+function aggiornaConv2(){
+  var prezzo=parseFloat(document.getElementById('conv2-tot').value)||0;
+  var qta=parseFloat(document.getElementById('conv2-qta').value)||0;
+  var unit=document.getElementById('conv2-unit').value;
+  var out1=document.getElementById('conv2-out-1');
+  var out2=document.getElementById('conv2-out-2');
+  if(!prezzo || !qta){
+    out1.innerHTML = '— <small>copia in €/lt o €/kg sopra</small>';
+    out2.innerHTML = '— <small>costo per unità singola</small>';
+    return;
+  }
+  var risultato = calcolaConversione(prezzo, qta, unit);
+  out1.innerHTML = risultato.principale + ' <small>'+risultato.lblPrincipale+'</small>';
+  out2.innerHTML = risultato.unitario + ' <small>'+risultato.lblUnitario+'</small>';
+}
+
+// Logica conversione condivisa
+function calcolaConversione(prezzo, qta, unit){
+  // converto tutto in: litri (per liquidi) o kg (per solidi)
+  var perLt=0, perKg=0, perUnit=0;
+  if(unit==='cl'){
+    perLt = prezzo / (qta/100);
+    perUnit = prezzo / qta; // €/cl
+    return {
+      principale: '€'+perLt.toFixed(2)+'/lt',
+      lblPrincipale: 'copia in €/lt sopra',
+      unitario: '€'+perUnit.toFixed(3)+'/cl',
+      lblUnitario: 'costo per centilitro'
+    };
+  } else if(unit==='ml'){
+    perLt = prezzo / (qta/1000);
+    perUnit = prezzo / qta;
+    return {
+      principale: '€'+perLt.toFixed(2)+'/lt',
+      lblPrincipale: 'copia in €/lt sopra',
+      unitario: '€'+perUnit.toFixed(4)+'/ml',
+      lblUnitario: 'costo per millilitro'
+    };
+  } else if(unit==='lt'){
+    perLt = prezzo / qta;
+    return {
+      principale: '€'+perLt.toFixed(2)+'/lt',
+      lblPrincipale: 'copia in €/lt sopra',
+      unitario: '€'+(perLt/100).toFixed(3)+'/cl',
+      lblUnitario: 'costo per centilitro'
+    };
+  } else if(unit==='g'){
+    perKg = prezzo / (qta/1000);
+    perUnit = prezzo / qta;
+    return {
+      principale: '€'+perKg.toFixed(2)+'/kg',
+      lblPrincipale: 'copia in €/kg sopra',
+      unitario: '€'+perUnit.toFixed(4)+'/g',
+      lblUnitario: 'costo per grammo'
+    };
+  } else if(unit==='kg'){
+    perKg = prezzo / qta;
+    return {
+      principale: '€'+perKg.toFixed(2)+'/kg',
+      lblPrincipale: 'copia in €/kg sopra',
+      unitario: '€'+(perKg/1000).toFixed(4)+'/g',
+      lblUnitario: 'costo per grammo'
+    };
+  }
+  return {principale:'—', lblPrincipale:'', unitario:'—', lblUnitario:''};
+}
 </script>
 </body>
 </html>
